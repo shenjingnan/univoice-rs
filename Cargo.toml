@@ -60,7 +60,7 @@ base64 = "0.22"
 
 # Xfyun ASR 鉴权（HMAC-SHA256 签名）
 hmac = "0.12"
-sha2 = "0.10"
+sha2 = "0.11"
 
 # Opus 编解码（可选，通过 opus-decoder / opus-encoder feature 启用）
 opus2 = { version = "0.4", features = ["bundled"], optional = true }
