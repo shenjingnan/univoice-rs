@@ -40,7 +40,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter", "registry"] }
 dotenvy = "0.15"                                        # .env 文件加载
 
 # --- ASR 依赖 ---
-tokio-tungstenite = { version = "0.24", features = ["native-tls"] }    # WebSocket 客户端
+tokio-tungstenite = { version = "0.30", features = ["native-tls"] }    # WebSocket 客户端
 tungstenite = "0.24"                                    # WebSocket 协议底层
 futures-util = "0.3"                                    # 异步流处理
 flate2 = "1"                                            # Gzip 压缩/解压
