@@ -1,0 +1,138 @@
+{
+  "name": "univoice",
+  "version": "0.11.0",
+  "description": "Unified Voice SDK for TTS and ASR",
+  "sideEffects": [
+    "**/providers/index.ts",
+    "**/providers/index.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shenjingnan/univoice.git"
+  },
+  "author": "shenjingnan <sjn.code@gmail.com>",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    },
+    "./tts": {
+      "import": "./dist/src/tts/index.js",
+      "types": "./dist/src/tts/index.d.ts",
+      "default": "./dist/src/tts/index.js"
+    },
+    "./tts/providers": {
+      "import": "./dist/src/tts/providers/index.js",
+      "types": "./dist/src/tts/providers/index.d.ts",
+      "default": "./dist/src/tts/providers/index.js"
+    },
+    "./asr": {
+      "import": "./dist/src/asr/index.js",
+      "types": "./dist/src/asr/index.d.ts",
+      "default": "./dist/src/asr/index.js"
+    },
+    "./asr/providers": {
+      "import": "./dist/src/asr/providers/index.js",
+      "types": "./dist/src/asr/providers/index.d.ts",
+      "default": "./dist/src/asr/providers/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "examples",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "spellcheck": "cspell lint .",
+    "benchmark": "tsx benchmark/index.ts",
+    "benchmark:run": "tsx benchmark/run.ts",
+    "benchmark:analyze": "tsx benchmark/analyze.ts",
+    "benchmark:sync": "tsx benchmark/sync-readme.ts",
+    "release": "release-it",
+    "release:beta": "release-it --preRelease=beta --ci",
+    "release:dry": "release-it --dry-run --ci",
+    "release:patch": "release-it patch --ci",
+    "release:minor": "release-it minor --ci",
+    "release:major": "release-it major --ci",
+    "prepare": "husky"
+  },
+  "keywords": [
+    "tts",
+    "asr",
+    "voice",
+    "speech",
+    "audio"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@10.30.3",
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.6",
+    "@release-it/conventional-changelog": "^11.0.0",
+    "@types/node": "^25.3.2",
+    "@types/ws": "^8.18.1",
+    "@vitest/coverage-v8": "^4.1.3",
+    "cspell": "^10.0.0",
+    "dotenv": "^17.3.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "release-it": "^19.2.4",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.3"
+  },
+  "dependencies": {
+    "ws": "^8.19.0"
+  },
+  "optionalDependencies": {
+    "openai": "^6.33.0",
+    "prism-media": "^1.3.5"
+  },
+  "pnpm": {
+    "neverBuiltDependencies": [
+      "@discordjs/opus"
+    ],
+    "overrides": {
+      "lodash": ">=4.17.23",
+      "tar@<=7.5.10": ">=7.5.11",
+      "flatted@<3.4.0": ">=3.4.0",
+      "undici@<6.24.0": ">=6.24.0",
+      "handlebars": ">=4.7.9",
+      "picomatch@<3.0.0": ">=2.3.2",
+      "picomatch@>=4.0.0": ">=4.0.4",
+      "brace-expansion@>=5.0.0": ">=5.0.5",
+      "brace-expansion@<2.0.0": ">=1.1.13",
+      "yaml": ">=2.8.3",
+      "@xmldom/xmldom@>=0.9.0 <0.9.9": ">=0.9.9",
+      "lodash-es@>=4.0.0 <=4.17.23": ">=4.18.0",
+      "lodash@>=4.0.0 <=4.17.23": ">=4.18.0",
+      "lodash-es@<=4.17.23": ">=4.18.0",
+      "lodash@<=4.17.23": ">=4.18.0",
+      "defu@<=6.1.4": ">=6.1.5",
+      "vite@<8.0.5": "8.0.5",
+      "basic-ftp@<=5.2.1": ">=5.2.2",
+      "basic-ftp@=5.2.0": ">=5.2.1"
+    }
+  }
+}
