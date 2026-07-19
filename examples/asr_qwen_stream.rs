@@ -44,7 +44,7 @@ struct Args {
 }
 
 /// 从文件扩展名推断音频容器格式
-fn detect_format(path: &PathBuf) -> AudioContainerFormat {
+fn detect_format(path: &std::path::Path) -> AudioContainerFormat {
     match path.extension().and_then(|s| s.to_str()) {
         Some("pcm") => AudioContainerFormat::Pcm,
         Some("wav") => AudioContainerFormat::Wav,
