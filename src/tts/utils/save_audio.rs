@@ -140,7 +140,7 @@ mod tests {
 
     #[test]
     fn test_create_wav_header() {
-        let audio_data = vec![0u8; 100];
+        let audio_data = [0u8; 100];
         let options = SaveAudioOptions::default();
         let header = create_wav_header(audio_data.len() as u32, &options);
 
@@ -194,7 +194,7 @@ mod tests {
         let file_path = dir.path().join("audio.pcm");
         let path_str = file_path.to_str().unwrap().to_string();
 
-        let audio_data = vec![0u8; 100];
+        let audio_data = [0u8; 100];
         save_audio(&path_str, &audio_data, SaveAudioOptions::default())
             .await
             .unwrap();
@@ -210,7 +210,7 @@ mod tests {
         let file_path = dir.path().join("audio.wav");
         let path_str = file_path.to_str().unwrap().to_string();
 
-        let audio_data = vec![0u8; 100];
+        let audio_data = [0u8; 100];
         save_audio(&path_str, &audio_data, SaveAudioOptions::default())
             .await
             .unwrap();
