@@ -237,18 +237,18 @@ async fn run_tts_synthesize(
 ) -> Result<TtsResponse, TtsError> {
     // 1. 发送 run-task
     let run_msg = dashscope::create_run_task_message(task_id, params);
-    ws.send(Message::Text(run_msg)).await?;
+    ws.send(Message::Text(run_msg.into())).await?;
 
     // 2. 等待 task-started
     wait_for_task_started(&mut ws).await?;
 
     // 3. 发送 continue-task
     let continue_msg = dashscope::create_continue_task_message(task_id, text);
-    ws.send(Message::Text(continue_msg)).await?;
+    ws.send(Message::Text(continue_msg.into())).await?;
 
     // 4. 发送 finish-task
     let finish_msg = dashscope::create_finish_task_message(task_id);
-    ws.send(Message::Text(finish_msg)).await?;
+    ws.send(Message::Text(finish_msg.into())).await?;
 
     // 5. 收集音频数据
     let audio_chunks = collect_audio_data(&mut ws).await?;
@@ -284,7 +284,7 @@ async fn run_tts_stream(
 
     // 1. 发送 run-task
     let run_msg = dashscope::create_run_task_message(&task_id, params);
-    write.send(Message::Text(run_msg)).await?;
+    write.send(Message::Text(run_msg.into())).await?;
 
     // 2. 等待 task-started
     loop {
@@ -315,16 +315,16 @@ async fn run_tts_stream(
         while let Some(chunk) = input.next().await {
             if !chunk.is_empty() {
                 let msg = dashscope::create_continue_task_message(&task_id, &chunk);
-                write.send(Message::Text(msg)).await?;
+                write.send(Message::Text(msg.into())).await?;
                 text_sent = true;
             }
         }
         if !text_sent {
             let msg = dashscope::create_continue_task_message(&task_id, "");
-            write.send(Message::Text(msg)).await?;
+            write.send(Message::Text(msg.into())).await?;
         }
         let finish_msg = dashscope::create_finish_task_message(&task_id);
-        write.send(Message::Text(finish_msg)).await?;
+        write.send(Message::Text(finish_msg.into())).await?;
         Ok(())
     });
 
@@ -332,7 +332,7 @@ async fn run_tts_stream(
         while let Some(msg) = read.next().await {
             match msg? {
                 Message::Binary(data) => {
-                    if tx.send(data).await.is_err() {
+                    if tx.send(data.to_vec()).await.is_err() {
                         return Ok(());
                     }
                 }
@@ -405,7 +405,7 @@ async fn collect_audio_data(
     loop {
         match ws.next().await {
             Some(Ok(Message::Binary(data))) if !data.is_empty() => {
-                audio_chunks.push(data);
+                audio_chunks.push(data.to_vec());
             }
             Some(Ok(Message::Text(data))) => {
                 let event = dashscope::parse_server_response(&data)?;
@@ -488,18 +488,18 @@ impl TtsConnection for QwenTtsConnection {
 
         // 1. run-task
         let run_msg = dashscope::create_run_task_message(&task_id, &params);
-        ws.send(Message::Text(run_msg)).await?;
+        ws.send(Message::Text(run_msg.into())).await?;
 
         // 2. wait task-started
         wait_for_task_started(ws).await?;
 
         // 3. continue-task
         let continue_msg = dashscope::create_continue_task_message(&task_id, &text);
-        ws.send(Message::Text(continue_msg)).await?;
+        ws.send(Message::Text(continue_msg.into())).await?;
 
         // 4. finish-task
         let finish_msg = dashscope::create_finish_task_message(&task_id);
-        ws.send(Message::Text(finish_msg)).await?;
+        ws.send(Message::Text(finish_msg.into())).await?;
 
         // 5. collect audio
         let audio_chunks = collect_audio_data(ws).await?;

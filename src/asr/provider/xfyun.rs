@@ -212,7 +212,7 @@ async fn send_audio_task(
             };
 
             write
-                .send(Message::Text(frame))
+                .send(Message::Text(frame.into()))
                 .await
                 .map_err(AsrError::Websocket)?;
 
@@ -225,7 +225,7 @@ async fn send_audio_task(
     // 发送末帧
     let last_frame = create_last_frame();
     write
-        .send(Message::Text(last_frame))
+        .send(Message::Text(last_frame.into()))
         .await
         .map_err(AsrError::Websocket)?;
 
@@ -246,7 +246,9 @@ async fn receive_results(
         // 先统一处理为文本
         let text = match msg {
             Message::Text(t) => t,
-            Message::Binary(data) => String::from_utf8(data).map_err(AsrError::Utf8)?,
+            Message::Binary(data) => String::from_utf8(data.to_vec())
+                .map_err(AsrError::Utf8)?
+                .into(),
             Message::Close(_) => {
                 let _ = tx.send(Ok(QueueItem::Complete)).await;
                 return Ok(());
@@ -830,10 +832,11 @@ mod tests {
 
     // ====== 3.7 iat_result 累积与动态修正 ======
 
+    /// 一条 iat 响应：(sn, pgs, rg, ls)
+    type IatResponse = (u32, Option<String>, Option<[u32; 2]>, bool);
+
     /// 辅助函数：构造 iat_result 场景测试（模拟接收任务的累积逻辑）
-    fn simulate_iat_result(
-        responses: Vec<(u32, Option<String>, Option<[u32; 2]>, bool)>,
-    ) -> Vec<String> {
+    fn simulate_iat_result(responses: Vec<IatResponse>) -> Vec<String> {
         let mut iat_result: Vec<Option<String>> = Vec::new();
         let mut outputs: Vec<String> = Vec::new();
 

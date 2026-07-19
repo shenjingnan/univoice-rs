@@ -126,6 +126,7 @@ mod tests {
         assert!(result.is_empty());
     }
 
+    #[cfg(not(target_os = "windows"))]
     #[tokio::test]
     async fn test_tee_audio_save_fails_no_dir() {
         let response = TtsResponse {
@@ -134,7 +135,7 @@ mod tests {
             duration: None,
         };
 
-        // 不存在的目录应该失败
+        // 不存在的目录应该失败（Unix 路径在 Windows 上行为不同）
         let result = tee_audio(
             &response,
             TeeOptions {
