@@ -28,7 +28,6 @@ use std::path::PathBuf;
 use clap::Parser;
 
 use univoice::tts::provider::{MinimaxTts, MinimaxTtsOption};
-use univoice::tts::voice_id;
 use univoice::tts::{BaseTtsOption, TtsProvider, TtsRequest};
 
 #[derive(Parser)]
