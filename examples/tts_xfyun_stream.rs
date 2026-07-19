@@ -150,7 +150,7 @@ async fn main() {
     // 模拟流式输入：按标点切分文本
     let chunks: Vec<String> = args
         .text
-        .split_inclusive(|c: char| c == '。' || c == '！' || c == '？' || c == '\n')
+        .split_inclusive(['。', '！', '？', '\n'])
         .map(|s| {
             if s.trim().is_empty() {
                 s.to_string()

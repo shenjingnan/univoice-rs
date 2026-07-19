@@ -830,10 +830,11 @@ mod tests {
 
     // ====== 3.7 iat_result 累积与动态修正 ======
 
+    /// 一条 iat 响应：(sn, pgs, rg, ls)
+    type IatResponse = (u32, Option<String>, Option<[u32; 2]>, bool);
+
     /// 辅助函数：构造 iat_result 场景测试（模拟接收任务的累积逻辑）
-    fn simulate_iat_result(
-        responses: Vec<(u32, Option<String>, Option<[u32; 2]>, bool)>,
-    ) -> Vec<String> {
+    fn simulate_iat_result(responses: Vec<IatResponse>) -> Vec<String> {
         let mut iat_result: Vec<Option<String>> = Vec::new();
         let mut outputs: Vec<String> = Vec::new();
 
