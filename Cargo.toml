@@ -10,7 +10,21 @@ homepage = "https://github.com/shenjingnan/univoice"
 documentation = "https://docs.rs/univoice"
 keywords = ["tts", "asr", "voice", "speech", "sdk"]
 categories = ["api-bindings", "multimedia::audio"]
-include = ["/src", "/examples/*.rs", "/tests", "/Cargo.toml", "/LICENSE", "/README.md"]
+include = [
+    "/src/lib.rs",
+    "/src/main.rs",
+    "/src/cli.rs",
+    "/src/logging.rs",
+    "/src/datetime.rs",
+    "/src/asr/",
+    "/src/config/",
+    "/src/tts/",
+    "/examples/*.rs",
+    "/tests",
+    "/Cargo.toml",
+    "/LICENSE",
+    "/README.md",
+]
 
 [dependencies]
 # CLI 框架
@@ -67,6 +81,7 @@ opus2 = { version = "0.4", features = ["bundled"], optional = true }
 
 [features]
 default = ["opus-decoder", "opus-encoder"]
+bench = []
 opus-decoder = ["opus2"]
 opus-encoder = ["opus2"]
 
@@ -92,3 +107,4 @@ lto = "thin"
 [[bin]]
 name = "univoice-bench"
 path = "src/bin/bench.rs"
+required-features = ["bench"]
