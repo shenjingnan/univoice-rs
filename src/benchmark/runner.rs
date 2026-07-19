@@ -88,11 +88,9 @@ pub async fn run_benchmark(args: &CliArgs) -> Result<(), Box<dyn std::error::Err
                             }
                             if result.status == "success" {
                                 success_tts += 1;
-                            } else {
-                                if let Some(ref err) = result.error {
+                            } else if let Some(ref err) = result.error {
                                     eprintln!("    ⚠️  测试失败: {}", err);
                                 }
-                            }
                         }
                         total_tts += results.len() as u32;
                         println!(
@@ -171,11 +169,9 @@ pub async fn run_benchmark(args: &CliArgs) -> Result<(), Box<dyn std::error::Err
                             }
                             if result.status == "success" {
                                 success_asr += 1;
-                            } else {
-                                if let Some(ref err) = result.error {
+                            } else if let Some(ref err) = result.error {
                                     eprintln!("    ⚠️  测试失败: {}", err);
                                 }
-                            }
                         }
                         total_asr += results.len() as u32;
                         println!(
