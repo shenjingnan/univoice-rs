@@ -535,7 +535,7 @@ mod tests {
     fn test_m11_empty_audio_skipped() {
         // data == "" → 应该被跳过
         let data = r#"{"choices":[{"delta":{"audio":{"data":""}}}]}"#;
-        assert!(matches!(parse_data(data).unwrap(), None));
+        assert!(parse_data(data).unwrap().is_none());
     }
 
     // -------- m12: SSE 行解析器 --------
