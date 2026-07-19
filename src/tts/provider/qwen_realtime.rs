@@ -625,7 +625,7 @@ mod tests {
         assert_eq!(provider.format, "mp3");
         assert_eq!(provider.sample_rate, 48000);
         assert_eq!(provider.instruction, Some("speak softly".into()));
-        assert_eq!(provider.optimize_instructions, true);
+        assert!(provider.optimize_instructions);
         assert_eq!(provider.speech_rate, Some(1.5));
         assert_eq!(provider.pitch_rate, Some(1.2));
         assert_eq!(provider.mode, RealtimeMode::Commit);
