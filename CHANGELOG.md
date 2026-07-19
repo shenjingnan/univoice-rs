@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.2](https://github.com/shenjingnan/univoice-rs/compare/v0.1.1...v0.1.2) - 2026-07-19
+
+### Other
+
+- *(build)* 从 crates.io 发布包中排除 benchmark 源码 ([#19](https://github.com/shenjingnan/univoice-rs/pull/19))
+
 ## [0.1.1](https://github.com/shenjingnan/univoice-rs/compare/v0.1.0...v0.1.1) - 2026-07-19
 
 ### Fixed
