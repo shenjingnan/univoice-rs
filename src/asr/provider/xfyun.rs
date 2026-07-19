@@ -212,7 +212,7 @@ async fn send_audio_task(
             };
 
             write
-                .send(Message::Text(frame))
+                .send(Message::Text(frame.into()))
                 .await
                 .map_err(AsrError::Websocket)?;
 
@@ -225,7 +225,7 @@ async fn send_audio_task(
     // 发送末帧
     let last_frame = create_last_frame();
     write
-        .send(Message::Text(last_frame))
+        .send(Message::Text(last_frame.into()))
         .await
         .map_err(AsrError::Websocket)?;
 
@@ -246,7 +246,9 @@ async fn receive_results(
         // 先统一处理为文本
         let text = match msg {
             Message::Text(t) => t,
-            Message::Binary(data) => String::from_utf8(data).map_err(AsrError::Utf8)?,
+            Message::Binary(data) => String::from_utf8(data.to_vec())
+                .map_err(AsrError::Utf8)?
+                .into(),
             Message::Close(_) => {
                 let _ = tx.send(Ok(QueueItem::Complete)).await;
                 return Ok(());

@@ -134,7 +134,7 @@ impl MockDashScopeServer {
                         });
                         eprintln!("[MOCK SERVER] Sending task-started");
                         if write
-                            .send(Message::Text(response.to_string()))
+                            .send(Message::Text(response.to_string().into()))
                             .await
                             .is_err()
                         {
@@ -153,7 +153,7 @@ impl MockDashScopeServer {
                             }
                         });
                         if write
-                            .send(Message::Text(response.to_string()))
+                            .send(Message::Text(response.to_string().into()))
                             .await
                             .is_err()
                         {
@@ -221,7 +221,7 @@ impl MockDashScopeServer {
                             });
 
                             if write
-                                .send(Message::Text(response.to_string()))
+                                .send(Message::Text(response.to_string().into()))
                                 .await
                                 .is_err()
                             {
@@ -314,7 +314,7 @@ impl MockDashScopeServer {
                         };
 
                         if write
-                            .send(Message::Text(response.to_string()))
+                            .send(Message::Text(response.to_string().into()))
                             .await
                             .is_err()
                         {

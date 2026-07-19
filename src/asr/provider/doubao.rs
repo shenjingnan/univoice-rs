@@ -236,7 +236,7 @@ impl DoubaoAsr {
         while let Some(chunk) = audio.next().await {
             let frame = encode_audio_request(sequence, &chunk, false)?;
             write
-                .send(Message::Binary(frame))
+                .send(Message::Binary(frame.into()))
                 .await
                 .map_err(|_| AsrError::Other("send failed".into()))?;
             sequence += 1;
@@ -245,7 +245,7 @@ impl DoubaoAsr {
         // 发送末帧
         let last_frame = encode_audio_request(sequence, &[], true)?;
         write
-            .send(Message::Binary(last_frame))
+            .send(Message::Binary(last_frame.into()))
             .await
             .map_err(|_| AsrError::Other("send last frame failed".into()))?;
 
@@ -351,7 +351,7 @@ impl AsrProvider for DoubaoAsr {
         // 发送 FullClientRequest
         let params = self.build_full_client_request_params();
         let full_request = encode_full_client_request(&params, 1, true)?;
-        write.send(Message::Binary(full_request)).await?;
+        write.send(Message::Binary(full_request.into())).await?;
 
         // 等待初始化确认
         match read.next().await {
@@ -428,7 +428,7 @@ impl AsrProvider for DoubaoAsr {
         // 发送 FullClientRequest（连接级别初始化）
         let params = self.build_full_client_request_params();
         let full_request = encode_full_client_request(&params, 1, true)?;
-        write.send(Message::Binary(full_request)).await?;
+        write.send(Message::Binary(full_request.into())).await?;
 
         // 等待初始化确认
         match read.next().await {

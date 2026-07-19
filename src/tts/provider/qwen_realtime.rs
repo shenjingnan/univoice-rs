@@ -275,11 +275,11 @@ async fn run_realtime_synthesize(
 
     // 2. 发送 append
     let append_msg = create_input_text_buffer_append(text);
-    ws.send(Message::Text(append_msg)).await?;
+    ws.send(Message::Text(append_msg.into())).await?;
 
     // 3. 发送 session.finish
     let finish_msg = create_session_finish();
-    ws.send(Message::Text(finish_msg)).await?;
+    ws.send(Message::Text(finish_msg.into())).await?;
 
     // 4. 收集音频
     let audio_chunks = collect_audio_deltas(ws).await?;
@@ -319,7 +319,7 @@ async fn run_realtime_stream(
 
     // session 初始化：发送 session.update，等待 session.updated
     let update_msg = dashscope_realtime::create_session_update(params);
-    write.send(Message::Text(update_msg)).await?;
+    write.send(Message::Text(update_msg.into())).await?;
 
     // 3. 等待 session.updated（通过 read half）
     let session_ok = loop {
@@ -356,16 +356,16 @@ async fn run_realtime_stream(
         while let Some(chunk) = input.next().await {
             if !chunk.is_empty() {
                 let msg = create_input_text_buffer_append(&chunk);
-                write.send(Message::Text(msg)).await?;
+                write.send(Message::Text(msg.into())).await?;
                 text_sent = true;
             }
         }
         if !text_sent {
             let msg = create_input_text_buffer_append("");
-            write.send(Message::Text(msg)).await?;
+            write.send(Message::Text(msg.into())).await?;
         }
         let finish_msg = create_session_finish();
-        write.send(Message::Text(finish_msg)).await?;
+        write.send(Message::Text(finish_msg.into())).await?;
         Ok(())
     });
 
@@ -520,11 +520,11 @@ impl TtsConnection for QwenRealtimeTtsConnection {
 
         // 发送 append
         let append_msg = create_input_text_buffer_append(&text);
-        ws.send(Message::Text(append_msg)).await?;
+        ws.send(Message::Text(append_msg.into())).await?;
 
         // 发送 session.finish
         let finish_msg = create_session_finish();
-        ws.send(Message::Text(finish_msg)).await?;
+        ws.send(Message::Text(finish_msg.into())).await?;
 
         // 收集音频
         let audio_chunks = collect_audio_deltas(ws).await?;
