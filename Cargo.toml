@@ -41,7 +41,7 @@ dotenvy = "0.15"                                        # .env 文件加载
 
 # --- ASR 依赖 ---
 tokio-tungstenite = { version = "0.30", features = ["native-tls"] }    # WebSocket 客户端
-tungstenite = "0.24"                                    # WebSocket 协议底层
+tungstenite = "0.30"                                    # WebSocket 协议底层
 futures-util = "0.3"                                    # 异步流处理
 flate2 = "1"                                            # Gzip 压缩/解压
 uuid = { version = "1", features = ["v4"] }             # UUID 生成
@@ -53,7 +53,7 @@ async-trait = "0.1"                                     # 异步 trait
 async-stream = "0.3"                                    # 流式宏
 
 # HTTP 客户端（用于 GLM REST API，multipart + 流式响应）
-reqwest = { version = "0.12", default-features = false, features = ["multipart", "stream", "native-tls"] }
+reqwest = { version = "0.13", default-features = false, features = ["multipart", "stream", "native-tls"] }
 
 # Base64 编解码（用于 MIMO ASR data URL + Xfyun 鉴权）
 base64 = "0.22"
