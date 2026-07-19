@@ -59,7 +59,7 @@ reqwest = { version = "0.13", default-features = false, features = ["multipart",
 base64 = "0.22"
 
 # Xfyun ASR 鉴权（HMAC-SHA256 签名）
-hmac = "0.12"
+hmac = "0.13"
 sha2 = "0.11"
 
 # Opus 编解码（可选，通过 opus-decoder / opus-encoder feature 启用）
