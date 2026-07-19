@@ -7,6 +7,7 @@ pub mod asr;
 pub mod tts;
 
 /// Benchmark 性能基准测试模块
+#[cfg(feature = "bench")]
 pub mod benchmark;
 
 /// 通用工具模块
