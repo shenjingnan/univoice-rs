@@ -58,7 +58,7 @@ jobs:
         run: cargo tarpaulin --out lcov --output-dir coverage -- --test-threads=1
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           files: ./coverage/lcov.info
           token: ${{ secrets.CODECOV_TOKEN }}
