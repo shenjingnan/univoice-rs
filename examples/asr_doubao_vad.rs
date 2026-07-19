@@ -171,7 +171,9 @@ async fn main() {
         ..Default::default()
     });
 
-    println!("[ASR 实例已创建] provider=doubao, endpoint=bigmodel_async, enable_nonstream=true, VAD endWindowSize=800ms");
+    println!(
+        "[ASR 实例已创建] provider=doubao, endpoint=bigmodel_async, enable_nonstream=true, VAD endWindowSize=800ms"
+    );
 
     // ---------------------------------------------------------------
     // 阶段 2: 将 Opus 数据包解码为 PCM 音频流
