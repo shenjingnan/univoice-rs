@@ -159,16 +159,19 @@ async fn main() {
         },
         app_key: Some(args.app_key),
         access_key: Some(args.access_key),
-        mode: DoubaoAsrMode::Streaming,
+        // 使用 bigmodel_async（双向流式优化版）才能支持 VAD 提前判停
+        mode: DoubaoAsrMode::Async,
         sample_rate: 16000,
         bits: 16,
         channel: 1,
-        // 开启 VAD 端点检测：静音 800ms 后自动判停
+        // 开启二遍识别：VAD 判停后使用 nostream 二次识别，输出 definite: true
+        enable_nonstream: Some(true),
+        // VAD 静音判停阈值 800ms
         end_window_size: Some(800),
         ..Default::default()
     });
 
-    println!("[ASR 实例已创建] provider=doubao, VAD endWindowSize=800ms");
+    println!("[ASR 实例已创建] provider=doubao, endpoint=bigmodel_async, enable_nonstream=true, VAD endWindowSize=800ms");
 
     // ---------------------------------------------------------------
     // 阶段 2: 将 Opus 数据包解码为 PCM 音频流
