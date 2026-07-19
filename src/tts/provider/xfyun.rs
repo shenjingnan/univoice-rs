@@ -196,7 +196,7 @@ impl TtsProvider for XfyunTts {
 
         // 一次性发送所有文本（status=2）
         let payload = xfyun::create_request_payload(&protocol_options, &request.text, 2, 0);
-        ws.send(Message::Text(payload)).await?;
+        ws.send(Message::Text(payload.into())).await?;
 
         // 收集音频数据
         let audio_chunks = collect_audio_synthesize(&mut ws).await?;
@@ -248,13 +248,13 @@ impl TtsProvider for XfyunTts {
                 };
 
                 let payload = xfyun::create_request_payload(&protocol_options, &chunk, status, seq);
-                write.send(Message::Text(payload)).await?;
+                write.send(Message::Text(payload.into())).await?;
                 seq += 1;
             }
 
             // 结束帧（status=2）
             let end_payload = xfyun::create_request_payload(&protocol_options, "", 2, seq);
-            write.send(Message::Text(end_payload)).await?;
+            write.send(Message::Text(end_payload.into())).await?;
 
             Ok(())
         });
@@ -267,8 +267,9 @@ impl TtsProvider for XfyunTts {
 
                 let text = match msg {
                     Message::Text(t) => t,
-                    Message::Binary(data) => String::from_utf8(data)
-                        .map_err(|e| TtsError::Other(format!("Non-UTF8 binary data: {e}")))?,
+                    Message::Binary(data) => String::from_utf8(data.to_vec())
+                        .map_err(|e| TtsError::Other(format!("Non-UTF8 binary data: {e}")))?
+                        .into(),
                     Message::Close(_) => return Ok(()),
                     Message::Ping(_) | Message::Pong(_) | Message::Frame(_) => continue,
                 };
@@ -356,7 +357,7 @@ async fn collect_audio_synthesize(
             }
             Some(Ok(Message::Binary(data))) => {
                 // 理论上 Xfyun TTS 只返回文本帧，但兼容处理
-                let text = String::from_utf8(data)
+                let text = String::from_utf8(data.to_vec())
                     .map_err(|e| TtsError::Other(format!("Non-UTF8 binary data: {e}")))?;
                 let response = xfyun::parse_response(&text)?;
                 if !xfyun::is_success(&response) {

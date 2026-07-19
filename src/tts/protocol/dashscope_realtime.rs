@@ -417,7 +417,7 @@ pub async fn initialize_session(
 
     // 2. 发送 session.update
     let update_msg = create_session_update(params);
-    ws.send(Message::Text(update_msg)).await?;
+    ws.send(Message::Text(update_msg.into())).await?;
 
     // 3. 等待 session.updated
     let event = wait_for_event_type(ws, &["session.updated"]).await?;

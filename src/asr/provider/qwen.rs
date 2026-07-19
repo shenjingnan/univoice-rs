@@ -204,7 +204,7 @@ impl QwenAsr {
             },
         };
         let json = serde_json::to_string(&run_task_msg)?;
-        write.send(Message::Text(json)).await?;
+        write.send(Message::Text(json.into())).await?;
 
         // 2. 手动读取第一个消息，验证 task-started
         match read.next().await {
@@ -287,11 +287,11 @@ async fn send_audio_task(
     tokio::pin!(audio);
 
     while let Some(chunk) = audio.next().await {
-        write.send(Message::Binary(chunk)).await?;
+        write.send(Message::Binary(chunk.into())).await?;
     }
 
     let finish_msg = dashscope::create_finish_task_message(&task_id);
-    write.send(Message::Text(finish_msg)).await?;
+    write.send(Message::Text(finish_msg.into())).await?;
 
     Ok(())
 }

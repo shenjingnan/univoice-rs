@@ -230,7 +230,7 @@ impl DoubaoTts {
         S: futures_util::Sink<Message, Error = tungstenite::Error> + Unpin,
     {
         let bytes = volcengine::marshal_message(msg)?;
-        sink.send(Message::Binary(bytes)).await?;
+        sink.send(Message::Binary(bytes.into())).await?;
         Ok(())
     }
 }
@@ -516,7 +516,7 @@ impl DoubaoTts {
         S: futures_util::Sink<Message, Error = tungstenite::Error> + Unpin,
     {
         let bytes = volcengine::marshal_message(msg)?;
-        sink.send(Message::Binary(bytes)).await?;
+        sink.send(Message::Binary(bytes.into())).await?;
         Ok(())
     }
 }
@@ -577,7 +577,7 @@ impl DoubaoTtsConnection {
         S: futures_util::Sink<Message, Error = tungstenite::Error> + Unpin,
     {
         let bytes = volcengine::marshal_message(msg)?;
-        sink.send(Message::Binary(bytes)).await?;
+        sink.send(Message::Binary(bytes.into())).await?;
         Ok(())
     }
 }
