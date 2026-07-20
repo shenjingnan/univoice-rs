@@ -52,6 +52,10 @@ pub struct CliArgs {
     #[arg(long, default_value_t = 30, help = "Timeout in seconds per test")]
     pub timeout: u64,
 
+    /// 仅分析已有结果并生成报告（不运行测试）
+    #[arg(long, help = "Analyze existing results and generate report")]
+    pub analyze: bool,
+
     /// 矩阵场景名称（如 qwen-matrix, doubao-matrix, all-matrix）
     #[arg(
         short = 's',

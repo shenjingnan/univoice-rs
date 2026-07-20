@@ -18,9 +18,12 @@
 //! cargo run --bin univoice-bench -- -p qwen,doubao -t all -i 3
 //! ```
 
+use std::path::Path;
+
 use clap::Parser;
 
 use univoice::benchmark::cli::CliArgs;
+use univoice::benchmark::runner::run_analyze;
 use univoice::benchmark::runner::run_benchmark;
 
 #[tokio::main]
@@ -29,6 +32,17 @@ async fn main() {
     dotenvy::dotenv().ok();
 
     let args = CliArgs::parse();
+
+    // 仅分析模式
+    if args.analyze {
+        println!("📊 Univoice Benchmark Report Generator\n");
+        let output_dir = Path::new(&args.output);
+        if let Err(e) = run_analyze(output_dir).await {
+            eprintln!("\n❌ 报告生成失败: {}", e);
+            std::process::exit(1);
+        }
+        return;
+    }
 
     println!("🚀 Univoice Benchmark v{}", env!("CARGO_PKG_VERSION"));
     println!("================================\n");
