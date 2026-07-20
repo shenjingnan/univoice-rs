@@ -153,7 +153,7 @@ fn create_doubao_tts(
     format: &str,
     sample_rate: Option<u32>,
 ) -> Result<Box<dyn TtsProvider>, ProviderError> {
-    let app_id = env_opt("DOUBAO_APP_ID");
+    let app_id = env_opt("DOUBAO_APP_KEY").or_else(|| env_opt("DOUBAO_APP_ID"));
     let access_token = env_opt("DOUBAO_ACCESS_TOKEN");
 
     Ok(Box::new(tts_provider::DoubaoTts::new(
