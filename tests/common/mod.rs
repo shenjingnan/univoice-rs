@@ -6,3 +6,4 @@
 
 pub mod mock_dashscope_server;
 pub mod mock_glm_http_server;
+pub mod mock_mimo_http_server;

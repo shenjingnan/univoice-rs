@@ -854,6 +854,63 @@ pub mod glm {
 }
 
 // ============================================================================
+// MiMo 音色
+// ============================================================================
+pub mod mimo {
+    use crate::tts::types::TtsVoice;
+
+    /// 默认音色
+    pub const DEFAULT_VOICE: &str = "mimo_default";
+
+    /// MiMo 系统音色
+    pub const ALL: &[(&str, &str, &str)] = &[
+        ("mimo_default", "MiMo Default", "zh-CN"),
+        ("default_zh", "Default (Chinese)", "zh-CN"),
+        ("default_en", "Default (English)", "en-US"),
+        ("Mia", "Mia", "zh-CN"),
+        ("Chloe", "Chloe", "zh-CN"),
+        ("Milo", "Milo", "en-US"),
+        ("Dean", "Dean", "en-US"),
+    ];
+
+    /// 构建 MiMo 音色列表
+    pub fn list_voices() -> Vec<TtsVoice> {
+        ALL.iter()
+            .map(|&(id, name, lang)| TtsVoice {
+                id: id.to_string(),
+                name: name.to_string(),
+                language: lang.to_string(),
+                gender: None,
+            })
+            .collect()
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test_m1_voices_count() {
+            let voices = list_voices();
+            assert_eq!(voices.len(), 7);
+        }
+
+        #[test]
+        fn test_m2_default_in_list() {
+            let voices = list_voices();
+            assert!(voices.iter().any(|v| v.id == DEFAULT_VOICE));
+        }
+
+        #[test]
+        fn test_m3_all_have_id() {
+            for v in list_voices() {
+                assert!(!v.id.is_empty());
+            }
+        }
+    }
+}
+
+// ============================================================================
 // Minimax 音色
 // ============================================================================
 pub mod minimax {

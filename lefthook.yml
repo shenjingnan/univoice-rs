@@ -1,0 +1,33 @@
+# lefthook.yml
+# Docs: https://lefthook.dev/configuration/
+
+min_version: 2.1.9
+colors: true
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: rust-checks
+      group:
+        piped: true
+        jobs:
+          - run: cargo fmt --check
+          - run: cargo clippy -- -D warnings
+          - run: cargo test -- --test-threads=1
+    - run: typos .
+
+commit-msg:
+  commands:
+    conventional-commit:
+      run: |
+        head -1 {1} | grep -qE '^(feat|fix|docs|style|refactor|perf|test|chore|revert)(\(.+\))?!?: .+' \
+          || { echo ""; \
+               echo "错误: commit 信息不符合 Conventional Commits 格式"; \
+               echo "格式: <type>(<scope>): <description>"; \
+               echo "类型: feat, fix, docs, style, refactor, perf, test, chore, revert"; \
+               exit 1; }
+
+pre-push:
+  commands:
+    tests:
+      run: cargo test -- --test-threads=1
