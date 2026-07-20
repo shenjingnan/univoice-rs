@@ -28,7 +28,10 @@ use univoice::tts::provider::{MimoTts, MimoTtsOption};
 use univoice::tts::{BaseTtsOption, TtsProvider, TtsRequest};
 
 #[derive(Parser)]
-#[command(name = "tts-mimo-synthesize", about = "MiMo (小米) TTS v2.5 非流式合成示例")]
+#[command(
+    name = "tts-mimo-synthesize",
+    about = "MiMo (小米) TTS v2.5 非流式合成示例"
+)]
 struct Args {
     /// MiMo API Key（也支持 MIMO_API_KEY 环境变量）
     #[arg(long, env = "MIMO_API_KEY")]

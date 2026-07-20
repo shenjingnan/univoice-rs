@@ -80,8 +80,7 @@ impl MimoTts {
             api_key: base.api_key.clone().unwrap_or_default(),
             base_url: Self::non_empty(base.base_url.clone())
                 .unwrap_or_else(|| MIMO_DEFAULT_BASE_URL.into()),
-            model: Self::non_empty(base.model.clone())
-                .unwrap_or_else(|| MIMO_DEFAULT_MODEL.into()),
+            model: Self::non_empty(base.model.clone()).unwrap_or_else(|| MIMO_DEFAULT_MODEL.into()),
             voice: base
                 .voice
                 .clone()

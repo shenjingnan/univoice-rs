@@ -260,10 +260,9 @@ async fn test_real_api_synthesize() {
         }
     };
 
-    let base_url = std::env::var("MIMO_BASE_URL")
-        .unwrap_or_else(|_| "https://api.xiaomimimo.com/v1".into());
-    let model = std::env::var("MIMO_TTS_MODEL")
-        .unwrap_or_else(|_| "mimo-v2.5-tts".into());
+    let base_url =
+        std::env::var("MIMO_BASE_URL").unwrap_or_else(|_| "https://api.xiaomimimo.com/v1".into());
+    let model = std::env::var("MIMO_TTS_MODEL").unwrap_or_else(|_| "mimo-v2.5-tts".into());
 
     let tts = MimoTts::new(MimoTtsOption {
         base: BaseTtsOption {
@@ -296,7 +295,6 @@ async fn test_real_api_synthesize() {
     assert_eq!(resp.format, "mp3");
 
     let out_path = "/tmp/mimo_tts_output.mp3";
-    std::fs::write(out_path, &resp.audio)
-        .expect("写入音频文件成功");
+    std::fs::write(out_path, &resp.audio).expect("写入音频文件成功");
     eprintln!("📁 音频已保存到: {out_path}");
 }
