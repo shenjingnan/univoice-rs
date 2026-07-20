@@ -189,6 +189,26 @@ pub mod glm {
     pub const LUODO: &str = "luodo";
 }
 
+/// MiMo 音色常量
+pub mod mimo {
+    /// MiMo Default（默认）
+    pub const DEFAULT: &str = "mimo_default";
+    /// MiMo Default
+    pub const MIMO_DEFAULT: &str = "mimo_default";
+    /// 中文默认
+    pub const DEFAULT_ZH: &str = "default_zh";
+    /// 英文默认
+    pub const DEFAULT_EN: &str = "default_en";
+    /// Mia
+    pub const MIA: &str = "Mia";
+    /// Chloe
+    pub const CHLOE: &str = "Chloe";
+    /// Milo
+    pub const MILO: &str = "Milo";
+    /// Dean
+    pub const DEAN: &str = "Dean";
+}
+
 /// Minimax 音色常量
 pub mod minimax {
     // ---- 中文（普通话）核心音色 ----
