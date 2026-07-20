@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.3](https://github.com/shenjingnan/univoice-rs/compare/v0.1.2...v0.1.3) - 2026-07-20
+
+### Added
+
+- *(benchmark)* 添加 --analyze 报告生成命令并修复 Doubao 环境变量 ([#25](https://github.com/shenjingnan/univoice-rs/pull/25))
+
+### Other
+
+- *(deps)* bump serde_json from 1.0.150 to 1.0.151 ([#22](https://github.com/shenjingnan/univoice-rs/pull/22))
+- *(deps)* bump toml from 0.8.23 to 1.1.3+spec-1.1.0 ([#23](https://github.com/shenjingnan/univoice-rs/pull/23))
+
 ## [0.1.2](https://github.com/shenjingnan/univoice-rs/compare/v0.1.1...v0.1.2) - 2026-07-19
 
 ### Other
