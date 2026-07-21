@@ -51,3 +51,4 @@ benchmark/results/
 # Claude AI plans (development artifacts)
 .claude/plans/
 .claude/
+tmp
