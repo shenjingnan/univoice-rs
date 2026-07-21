@@ -274,7 +274,7 @@ pub mod minimax {
     pub const SERENE_WOMAN: &str = "Spanish_SereneWoman";
 }
 
-/// Qwen/CosyVoice 音色常量
+/// CosyVoice 音色常量
 pub mod qwen {
     /// 默认模型
     pub const DEFAULT_MODEL: &str = "cosyvoice-v3-flash";
@@ -336,8 +336,8 @@ pub mod qwen {
     pub const LONGANHUAN: &str = "longanhuan";
 }
 
-/// Qwen Realtime TTS 音色常量
-pub mod qwen_realtime {
+/// Qwen3-TTS 音色常量
+pub mod qwen3_tts {
     /// Cherry（默认）
     pub const DEFAULT: &str = "Cherry";
     pub const CHERRY: &str = "Cherry";
@@ -535,9 +535,9 @@ mod tests {
 
     #[test]
     fn test_k3_qwen_realtime_constants() {
-        assert_eq!(qwen_realtime::DEFAULT, "Cherry");
-        assert_eq!(qwen_realtime::CHERRY, "Cherry");
-        assert!(!qwen_realtime::SERENA.is_empty());
+        assert_eq!(qwen3_tts::DEFAULT, "Cherry");
+        assert_eq!(qwen3_tts::CHERRY, "Cherry");
+        assert!(!qwen3_tts::SERENA.is_empty());
     }
 
     #[test]

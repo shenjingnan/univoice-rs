@@ -241,11 +241,11 @@ fn error_result(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::benchmark::matrix::providers::qwen_provider_matrix_config;
+    use crate::benchmark::matrix::providers::cosyvoice_provider_matrix_config;
 
     #[tokio::test]
     async fn test_run_single_matrix_error_unknown_provider() {
-        let config = qwen_provider_matrix_config();
+        let config = cosyvoice_provider_matrix_config();
         let item = MatrixItem {
             provider: "unknown".into(),
             model: "test".into(),

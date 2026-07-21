@@ -18,12 +18,12 @@ use crate::tts::voices;
 
 // ============================== 常量 ==============================
 
-/// Qwen（DashScope）默认 WebSocket 地址
-pub const QWEN_DEFAULT_BASE_URL: &str = "wss://dashscope.aliyuncs.com/api-ws/v1/inference/";
-/// Qwen TTS 默认模型
-pub const QWEN_DEFAULT_MODEL: &str = "cosyvoice-v3-flash";
-/// Qwen TTS 默认音色
-pub const QWEN_DEFAULT_VOICE: &str = "longxiaochun_v3";
+/// CosyVoice（DashScope）默认 WebSocket 地址
+pub const COSYVOICE_DEFAULT_BASE_URL: &str = "wss://dashscope.aliyuncs.com/api-ws/v1/inference/";
+/// CosyVoice 默认模型
+pub const COSYVOICE_DEFAULT_MODEL: &str = "cosyvoice-v3-flash";
+/// CosyVoice 默认音色
+pub const COSYVOICE_DEFAULT_VOICE: &str = "longxiaochun_v3";
 
 /// 连接超时
 #[cfg(not(test))]
@@ -33,9 +33,9 @@ const CONNECT_TIMEOUT: Duration = Duration::from_secs(1);
 
 // ============================== 内部辅助结构 ==============================
 
-/// Qwen TTS 运行时配置（从 QwenTts 提取，用于在连接上执行合成）
+/// CosyVoice 运行时配置（从 CosyvoiceTts 提取，用于在连接上执行合成）
 #[derive(Debug, Clone)]
-struct QwenTtsConfig {
+struct CosyvoiceConfig {
     model: String,
     voice: VoiceId,
     format: String,
@@ -45,21 +45,21 @@ struct QwenTtsConfig {
     pitch: f32,
 }
 
-// ============================== QwenTtsOption ==============================
+// ============================== CosyvoiceTtsOption ==============================
 
-/// Qwen TTS 专属配置
+/// CosyVoice TTS 专属配置
 #[derive(Debug, Clone, Default)]
-pub struct QwenTtsOption {
+pub struct CosyvoiceTtsOption {
     pub base: BaseTtsOption,
     pub sample_rate: Option<u32>,
-    /// 情感控制指令，仅 qwen3-tts 新模型支持（TS 占位字段，当前协议未发送）
+    /// Qwen3-TTS 的情感控制指令（TS 占位字段，当前协议未发送）
     pub instruction: Option<String>,
 }
 
-// ============================== QwenTts ==============================
+// ============================== CosyvoiceTts ==============================
 
-/// Qwen TTS Provider
-pub struct QwenTts {
+/// CosyVoice TTS Provider
+pub struct CosyvoiceTts {
     api_key: String,
     base_url: String,
     model: String,
@@ -72,23 +72,23 @@ pub struct QwenTts {
     _instruction: Option<String>,
 }
 
-impl QwenTts {
-    pub fn new(options: QwenTtsOption) -> Self {
+impl CosyvoiceTts {
+    pub fn new(options: CosyvoiceTtsOption) -> Self {
         let base = &options.base;
         Self {
             api_key: base.api_key.clone().unwrap_or_default(),
             base_url: base
                 .base_url
                 .clone()
-                .unwrap_or_else(|| QWEN_DEFAULT_BASE_URL.into()),
+                .unwrap_or_else(|| COSYVOICE_DEFAULT_BASE_URL.into()),
             model: base
                 .model
                 .clone()
-                .unwrap_or_else(|| QWEN_DEFAULT_MODEL.into()),
+                .unwrap_or_else(|| COSYVOICE_DEFAULT_MODEL.into()),
             voice: base
                 .voice
                 .clone()
-                .unwrap_or_else(|| VoiceId::from(QWEN_DEFAULT_VOICE)),
+                .unwrap_or_else(|| VoiceId::from(COSYVOICE_DEFAULT_VOICE)),
             format: base.format.clone().unwrap_or_else(|| "mp3".into()),
             sample_rate: options.sample_rate,
             speed: base.speed.unwrap_or(1.0),
@@ -98,8 +98,8 @@ impl QwenTts {
         }
     }
 
-    fn config(&self) -> QwenTtsConfig {
-        QwenTtsConfig {
+    fn config(&self) -> CosyvoiceConfig {
+        CosyvoiceConfig {
             model: self.model.clone(),
             voice: self.voice.clone(),
             format: self.format.clone(),
@@ -143,7 +143,7 @@ impl QwenTts {
     fn ensure_valid(&self) -> Result<(), TtsError> {
         if self.api_key.is_empty() {
             return Err(TtsError::InvalidParameter(
-                "apiKey is required for Qwen TTS".into(),
+                "apiKey is required for CosyVoice TTS".into(),
             ));
         }
         Ok(())
@@ -177,9 +177,9 @@ impl QwenTts {
 
 #[async_trait]
 #[allow(clippy::result_large_err)]
-impl TtsProvider for QwenTts {
+impl TtsProvider for CosyvoiceTts {
     fn name(&self) -> &'static str {
-        "qwen"
+        "cosyvoice"
     }
 
     async fn synthesize(&self, request: TtsRequest) -> Result<TtsResponse, TtsError> {
@@ -213,7 +213,7 @@ impl TtsProvider for QwenTts {
             .await
             .map_err(|_| TtsError::Timeout(options.timeout.as_millis() as u64))??;
 
-        Ok(Box::new(QwenTtsConnection {
+        Ok(Box::new(CosyvoiceTtsConnection {
             ws: Some(ws_stream),
             state: ConnectionState::Connected,
             config: self.config(),
@@ -233,7 +233,7 @@ async fn run_tts_synthesize(
     text: &str,
     task_id: &str,
     params: &TtsRunTaskParams,
-    config: &QwenTtsConfig,
+    config: &CosyvoiceConfig,
 ) -> Result<TtsResponse, TtsError> {
     // 1. 发送 run-task
     let run_msg = dashscope::create_run_task_message(task_id, params);
@@ -276,7 +276,7 @@ async fn run_tts_stream(
     ws: WebSocketStream<MaybeTlsStream<TcpStream>>,
     mut input: TextStream,
     params: &TtsRunTaskParams,
-    _config: &QwenTtsConfig,
+    _config: &CosyvoiceConfig,
 ) -> Result<TtsAudioStream, TtsError> {
     let (mut write, mut read) = ws.split();
     let task_id = uuid::Uuid::new_v4().to_string();
@@ -425,16 +425,16 @@ async fn collect_audio_data(
     Ok(audio_chunks)
 }
 
-// ============================== QwenTtsConnection ==============================
+// ============================== CosyvoiceTtsConnection ==============================
 
-/// Qwen TTS 连接实例
-pub struct QwenTtsConnection {
+/// CosyVoice TTS 连接实例
+pub struct CosyvoiceTtsConnection {
     ws: Option<WebSocketStream<MaybeTlsStream<TcpStream>>>,
     state: ConnectionState,
-    config: QwenTtsConfig,
+    config: CosyvoiceConfig,
 }
 
-impl QwenTtsConnection {
+impl CosyvoiceTtsConnection {
     fn build_params(&self) -> TtsRunTaskParams {
         let vol = (self.config.volume * 100.0) as u32;
         TtsRunTaskParams {
@@ -450,12 +450,12 @@ impl QwenTtsConnection {
 }
 
 #[cfg(test)]
-impl QwenTtsConnection {
+impl CosyvoiceTtsConnection {
     pub(crate) fn new_for_test(state: ConnectionState) -> Self {
         Self {
             ws: None,
             state,
-            config: QwenTtsConfig {
+            config: CosyvoiceConfig {
                 model: String::new(),
                 voice: VoiceId::new(""),
                 format: String::new(),
@@ -470,7 +470,7 @@ impl QwenTtsConnection {
 
 #[async_trait]
 #[allow(clippy::result_large_err)]
-impl TtsConnection for QwenTtsConnection {
+impl TtsConnection for CosyvoiceTtsConnection {
     fn state(&self) -> ConnectionState {
         self.state
     }
@@ -553,17 +553,17 @@ mod tests {
 
     #[test]
     fn test_c1_defaults() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("test-key".into()),
                 ..Default::default()
             },
             ..Default::default()
         });
-        assert_eq!(provider.name(), "qwen");
-        assert_eq!(provider.base_url, QWEN_DEFAULT_BASE_URL);
-        assert_eq!(provider.model, QWEN_DEFAULT_MODEL);
-        assert_eq!(provider.voice, QWEN_DEFAULT_VOICE);
+        assert_eq!(provider.name(), "cosyvoice");
+        assert_eq!(provider.base_url, COSYVOICE_DEFAULT_BASE_URL);
+        assert_eq!(provider.model, COSYVOICE_DEFAULT_MODEL);
+        assert_eq!(provider.voice, COSYVOICE_DEFAULT_VOICE);
         assert_eq!(provider.format, "mp3");
         assert_eq!(provider.speed, 1.0);
         assert_eq!(provider.volume, 1.0);
@@ -572,7 +572,7 @@ mod tests {
 
     #[test]
     fn test_c2_custom_options() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("custom-key".into()),
                 base_url: Some("wss://custom-host/".into()),
@@ -601,7 +601,7 @@ mod tests {
 
     #[test]
     fn test_c3_api_key_from_base() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("the-key".into()),
                 ..Default::default()
@@ -610,7 +610,7 @@ mod tests {
         });
         assert_eq!(provider.api_key, "the-key");
 
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: None,
                 ..Default::default()
@@ -622,7 +622,7 @@ mod tests {
 
     #[test]
     fn test_c4_model_from_base() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 model: Some("custom-model".into()),
@@ -632,7 +632,7 @@ mod tests {
         });
         assert_eq!(provider.model, "custom-model");
 
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 model: None,
@@ -640,12 +640,12 @@ mod tests {
             },
             ..Default::default()
         });
-        assert_eq!(provider.model, QWEN_DEFAULT_MODEL);
+        assert_eq!(provider.model, COSYVOICE_DEFAULT_MODEL);
     }
 
     #[test]
     fn test_c5_voice_default() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 voice: None,
@@ -653,12 +653,12 @@ mod tests {
             },
             ..Default::default()
         });
-        assert_eq!(provider.voice, QWEN_DEFAULT_VOICE);
+        assert_eq!(provider.voice, COSYVOICE_DEFAULT_VOICE);
     }
 
     #[test]
     fn test_c6_format_default() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 format: None,
@@ -671,7 +671,7 @@ mod tests {
 
     #[test]
     fn test_c7_sample_rate_custom() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 ..Default::default()
@@ -686,7 +686,7 @@ mod tests {
 
     #[test]
     fn test_h1_ws_request_headers() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("test-key".into()),
                 ..Default::default()
@@ -732,7 +732,7 @@ mod tests {
 
     #[test]
     fn test_h2_ws_request_invalid_url() {
-        let provider = QwenTts {
+        let provider = CosyvoiceTts {
             api_key: "k".into(),
             base_url: "not a valid url".into(),
             model: String::new(),
@@ -750,7 +750,7 @@ mod tests {
 
     #[test]
     fn test_h3_ws_request_uri_trailing_slash() {
-        let provider = QwenTts {
+        let provider = CosyvoiceTts {
             api_key: "k".into(),
             base_url: "wss://dashscope.aliyuncs.com/api-ws/v1/inference/".into(),
             model: String::new(),
@@ -768,7 +768,7 @@ mod tests {
 
     #[test]
     fn test_h4_ws_request_with_port() {
-        let provider = QwenTts {
+        let provider = CosyvoiceTts {
             api_key: "k".into(),
             base_url: "wss://host:8443/path".into(),
             model: String::new(),
@@ -790,7 +790,7 @@ mod tests {
 
     #[test]
     fn test_h5_ws_request_with_query() {
-        let provider = QwenTts {
+        let provider = CosyvoiceTts {
             api_key: "k".into(),
             base_url: "wss://host/path?version=2".into(),
             model: String::new(),
@@ -813,7 +813,7 @@ mod tests {
 
     #[test]
     fn test_v1_empty_api_key() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("".into()),
                 ..Default::default()
@@ -828,7 +828,7 @@ mod tests {
 
     #[test]
     fn test_v2_valid_api_key() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("valid-key".into()),
                 ..Default::default()
@@ -840,7 +840,7 @@ mod tests {
 
     #[test]
     fn test_v3_synthesize_empty_key() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("".into()),
                 ..Default::default()
@@ -860,20 +860,20 @@ mod tests {
 
     #[test]
     fn test_s1_connection_state_initial() {
-        let conn = QwenTtsConnection::new_for_test(ConnectionState::Connected);
+        let conn = CosyvoiceTtsConnection::new_for_test(ConnectionState::Connected);
         assert_eq!(conn.state(), ConnectionState::Connected);
     }
 
     #[tokio::test]
     async fn test_s2_close_transition() {
-        let mut conn = QwenTtsConnection::new_for_test(ConnectionState::Connected);
+        let mut conn = CosyvoiceTtsConnection::new_for_test(ConnectionState::Connected);
         conn.close().await.unwrap();
         assert_eq!(conn.state(), ConnectionState::Closed);
     }
 
     #[tokio::test]
     async fn test_s3_close_idempotent() {
-        let mut conn = QwenTtsConnection::new_for_test(ConnectionState::Connected);
+        let mut conn = CosyvoiceTtsConnection::new_for_test(ConnectionState::Connected);
         conn.close().await.unwrap();
         conn.close().await.unwrap();
         assert_eq!(conn.state(), ConnectionState::Closed);
@@ -881,7 +881,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_s4_synthesize_after_close() {
-        let mut conn = QwenTtsConnection::new_for_test(ConnectionState::Connected);
+        let mut conn = CosyvoiceTtsConnection::new_for_test(ConnectionState::Connected);
         conn.close().await.unwrap();
         let result = conn.synthesize("text".into()).await;
         assert!(matches!(result, Err(TtsError::ConnectionClosed)));
@@ -889,7 +889,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_s5_speak_stream_after_close() {
-        let mut conn = QwenTtsConnection::new_for_test(ConnectionState::Connected);
+        let mut conn = CosyvoiceTtsConnection::new_for_test(ConnectionState::Connected);
         conn.close().await.unwrap();
         let input: TextStream = Box::pin(futures_util::stream::empty());
         let result = conn.speak_stream(input).await;
@@ -898,7 +898,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_s6_synthesize_with_ws_none() {
-        let mut conn = QwenTtsConnection::new_for_test(ConnectionState::Connected);
+        let mut conn = CosyvoiceTtsConnection::new_for_test(ConnectionState::Connected);
         let result = conn.synthesize("text".into()).await;
         assert!(matches!(result, Err(TtsError::ConnectionClosed)));
     }
@@ -907,7 +907,7 @@ mod tests {
 
     #[test]
     fn test_m1_volume_default() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 volume: None,
@@ -922,7 +922,7 @@ mod tests {
 
     #[test]
     fn test_m2_volume_zero() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 volume: Some(0.0),
@@ -937,7 +937,7 @@ mod tests {
 
     #[test]
     fn test_m3_volume_max() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 volume: Some(1.0),
@@ -952,7 +952,7 @@ mod tests {
 
     #[test]
     fn test_m4_volume_mid() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 volume: Some(0.5),
@@ -968,7 +968,7 @@ mod tests {
 
     #[test]
     fn test_l1_list_voices_not_empty() {
-        let provider = QwenTts::new(QwenTtsOption {
+        let provider = CosyvoiceTts::new(CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 ..Default::default()
@@ -977,6 +977,9 @@ mod tests {
         });
         let rt = tokio::runtime::Runtime::new().unwrap();
         let voices = rt.block_on(provider.list_voices()).unwrap();
-        assert!(!voices.is_empty(), "Qwen list_voices should not be empty");
+        assert!(
+            !voices.is_empty(),
+            "CosyVoice list_voices should not be empty"
+        );
     }
 }

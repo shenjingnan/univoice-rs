@@ -1,4 +1,4 @@
-/// Qwen TTS - 流式语音合成示例（边发边收）
+/// CosyVoice TTS - 流式语音合成示例（边发边收）
 ///
 /// 将分段文本流式发送到服务端，同时接收音频流并保存到文件。
 /// 适用于 LLM 流式输出转语音等场景。
@@ -7,11 +7,11 @@
 ///
 /// ```bash
 /// # 使用 .env 中的 API Key
-/// cargo run --example tts_qwen_stream -- \
+/// cargo run --example tts_cosyvoice_stream -- \
 ///   --output output.mp3
 ///
 /// # 自定义文本分段
-/// cargo run --example tts_qwen_stream -- \
+/// cargo run --example tts_cosyvoice_stream -- \
 ///   --text "第一段内容。" --text "第二段内容。" --text "第三段内容。" \
 ///   --output speech.mp3
 /// ```
@@ -20,11 +20,11 @@ use std::path::PathBuf;
 use clap::Parser;
 use futures_util::StreamExt;
 
-use univoice::tts::provider::{QwenTts, QwenTtsOption};
+use univoice::tts::provider::{CosyvoiceTts, CosyvoiceTtsOption};
 use univoice::tts::{BaseTtsOption, TextStream, TtsProvider};
 
 #[derive(Parser)]
-#[command(name = "tts-qwen-stream", about = "Qwen TTS 流式合成示例")]
+#[command(name = "tts-cosyvoice-stream", about = "CosyVoice TTS 流式合成示例")]
 struct Args {
     /// DashScope API Key（也支持 QWEN_API_KEY 环境变量）
     #[arg(long, env = "QWEN_API_KEY")]
@@ -47,7 +47,7 @@ struct Args {
     #[arg(long)]
     voice: Option<String>,
 
-    /// 模型名称（默认 cosyvoice-v3-flash）
+    /// CosyVoice 模型名称（默认 cosyvoice-v3-flash）
     #[arg(long)]
     model: Option<String>,
 
@@ -82,7 +82,7 @@ async fn main() {
     println!("输出: {}", args.output.display());
 
     // 创建 Qwen TTS 实例
-    let tts = QwenTts::new(QwenTtsOption {
+    let tts = CosyvoiceTts::new(CosyvoiceTtsOption {
         base: BaseTtsOption {
             api_key: Some(args.api_key),
             model: args.model,

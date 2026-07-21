@@ -1,8 +1,8 @@
-//! Qwen Realtime TTS Provider
+//! Qwen3-TTS Provider
 //!
 //! 基于阿里云 DashScope Realtime WebSocket API 实现语音合成。
 //!
-//! 与 QwenTTS (CosyVoice) 的区别:
+//! 与 CosyVoice 的区别:
 //! - 端点: `wss://dashscope.aliyuncs.com/api-ws/v1/realtime?model=xxx`
 //! - 消息格式: 事件类型 + JSON 结构
 //! - 音频数据通过 Base64 编码在 JSON 事件中传输
@@ -45,26 +45,26 @@ use crate::tts::voices;
 
 // ============================== 常量 ==============================
 
-/// Qwen Realtime TTS 默认 WebSocket 地址
-pub const QWEN_REALTIME_DEFAULT_BASE_URL: &str = "wss://dashscope.aliyuncs.com/api-ws/v1/realtime";
+/// Qwen3-TTS 默认 WebSocket 地址
+pub const QWEN3_DEFAULT_BASE_URL: &str = "wss://dashscope.aliyuncs.com/api-ws/v1/realtime";
 
 /// Qwen Realtime TTS 默认模型
-pub const QWEN_REALTIME_DEFAULT_MODEL: &str = "qwen3-tts-instruct-flash-realtime";
+pub const QWEN3_DEFAULT_MODEL: &str = "qwen3-tts-instruct-flash-realtime";
 
 /// Qwen Realtime TTS 默认音色
-pub const QWEN_REALTIME_DEFAULT_VOICE: &str = "Cherry";
+pub const QWEN3_DEFAULT_VOICE: &str = "Cherry";
 
 /// Qwen Realtime TTS 默认音频格式
-pub const QWEN_REALTIME_DEFAULT_FORMAT: &str = "pcm";
+pub const QWEN3_DEFAULT_FORMAT: &str = "pcm";
 
 /// Qwen Realtime TTS 默认采样率
-pub const QWEN_REALTIME_DEFAULT_SAMPLE_RATE: u32 = 24000;
+pub const QWEN3_DEFAULT_SAMPLE_RATE: u32 = 24000;
 
-// ============================== QwenRealtimeTtsOption ==============================
+// ============================== Qwen3TtsOption ==============================
 
-/// Qwen Realtime TTS 专属配置
+/// Qwen3-TTS 专属配置
 #[derive(Debug, Clone, Default)]
-pub struct QwenRealtimeTtsOption {
+pub struct Qwen3TtsOption {
     pub base: BaseTtsOption,
     /// 采样率
     pub sample_rate: Option<u32>,
@@ -84,9 +84,9 @@ pub struct QwenRealtimeTtsOption {
 
 // ============================== 内部辅助结构 ==============================
 
-/// Qwen Realtime TTS 运行时配置
+/// Qwen3-TTS 运行时配置
 #[derive(Debug, Clone)]
-struct QwenRealtimeConfig {
+struct Qwen3TtsConfig {
     #[allow(dead_code)]
     model: String,
     voice: VoiceId,
@@ -100,10 +100,10 @@ struct QwenRealtimeConfig {
     language_type: Option<String>,
 }
 
-// ============================== QwenRealtimeTts ==============================
+// ============================== Qwen3Tts ==============================
 
-/// Qwen Realtime TTS Provider
-pub struct QwenRealtimeTts {
+/// Qwen3-TTS Provider
+pub struct Qwen3Tts {
     api_key: String,
     base_url: String,
     model: String,
@@ -118,30 +118,28 @@ pub struct QwenRealtimeTts {
     language_type: Option<String>,
 }
 
-impl QwenRealtimeTts {
-    pub fn new(options: QwenRealtimeTtsOption) -> Self {
+impl Qwen3Tts {
+    pub fn new(options: Qwen3TtsOption) -> Self {
         let base = &options.base;
         Self {
             api_key: base.api_key.clone().unwrap_or_default(),
             base_url: base
                 .base_url
                 .clone()
-                .unwrap_or_else(|| QWEN_REALTIME_DEFAULT_BASE_URL.into()),
+                .unwrap_or_else(|| QWEN3_DEFAULT_BASE_URL.into()),
             model: base
                 .model
                 .clone()
-                .unwrap_or_else(|| QWEN_REALTIME_DEFAULT_MODEL.into()),
+                .unwrap_or_else(|| QWEN3_DEFAULT_MODEL.into()),
             voice: base
                 .voice
                 .clone()
-                .unwrap_or_else(|| VoiceId::from(QWEN_REALTIME_DEFAULT_VOICE)),
+                .unwrap_or_else(|| VoiceId::from(QWEN3_DEFAULT_VOICE)),
             format: base
                 .format
                 .clone()
-                .unwrap_or_else(|| QWEN_REALTIME_DEFAULT_FORMAT.into()),
-            sample_rate: options
-                .sample_rate
-                .unwrap_or(QWEN_REALTIME_DEFAULT_SAMPLE_RATE),
+                .unwrap_or_else(|| QWEN3_DEFAULT_FORMAT.into()),
+            sample_rate: options.sample_rate.unwrap_or(QWEN3_DEFAULT_SAMPLE_RATE),
             instruction: options.instruction,
             optimize_instructions: options.optimize_instructions.unwrap_or(false),
             speech_rate: options.speech_rate,
@@ -151,8 +149,8 @@ impl QwenRealtimeTts {
         }
     }
 
-    fn config(&self) -> QwenRealtimeConfig {
-        QwenRealtimeConfig {
+    fn config(&self) -> Qwen3TtsConfig {
+        Qwen3TtsConfig {
             model: self.model.clone(),
             voice: self.voice.clone(),
             format: self.format.clone(),
@@ -185,7 +183,7 @@ impl QwenRealtimeTts {
     fn ensure_valid(&self) -> Result<(), TtsError> {
         if self.api_key.is_empty() {
             return Err(TtsError::InvalidParameter(
-                "apiKey is required for Qwen Realtime TTS".into(),
+                "apiKey is required for Qwen3-TTS".into(),
             ));
         }
         Ok(())
@@ -202,9 +200,9 @@ impl QwenRealtimeTts {
 
 #[async_trait]
 #[allow(clippy::result_large_err)]
-impl TtsProvider for QwenRealtimeTts {
+impl TtsProvider for Qwen3Tts {
     fn name(&self) -> &'static str {
-        "qwen-realtime"
+        "qwen3-tts"
     }
 
     async fn synthesize(&self, request: TtsRequest) -> Result<TtsResponse, TtsError> {
@@ -243,7 +241,7 @@ impl TtsProvider for QwenRealtimeTts {
         // connect() 自动完成 session 初始化
         initialize_session(&mut ws, &params).await?;
 
-        Ok(Box::new(QwenRealtimeTtsConnection {
+        Ok(Box::new(Qwen3TtsConnection {
             ws: Some(ws),
             state: ConnectionState::Connected,
             config,
@@ -251,7 +249,7 @@ impl TtsProvider for QwenRealtimeTts {
     }
 
     async fn list_voices(&self) -> Result<Vec<TtsVoice>, TtsError> {
-        Ok(voices::qwen_realtime::list_voices())
+        Ok(voices::qwen3_tts::list_voices())
     }
 }
 
@@ -268,7 +266,7 @@ async fn run_realtime_synthesize(
     ws: &mut WebSocketStream<MaybeTlsStream<TcpStream>>,
     text: &str,
     params: &SessionUpdateParams,
-    _config: &QwenRealtimeConfig,
+    _config: &Qwen3TtsConfig,
 ) -> Result<TtsResponse, TtsError> {
     // 1. session 初始化
     initialize_session(ws, params).await?;
@@ -312,7 +310,7 @@ async fn run_realtime_stream(
     ws: WebSocketStream<MaybeTlsStream<TcpStream>>,
     mut input: TextStream,
     params: &SessionUpdateParams,
-    _config: &QwenRealtimeConfig,
+    _config: &Qwen3TtsConfig,
 ) -> Result<TtsAudioStream, TtsError> {
     let (mut write, mut read) = ws.split();
     let (tx, mut rx) = tokio::sync::mpsc::channel::<Vec<u8>>(64);
@@ -450,19 +448,19 @@ async fn collect_audio_deltas(
     Ok(audio_chunks)
 }
 
-// ============================== QwenRealtimeTtsConnection ==============================
+// ============================== Qwen3TtsConnection ==============================
 
-/// Qwen Realtime TTS 连接实例
+/// Qwen3-TTS 连接实例
 ///
-/// 通过 QwenRealtimeTts::connect() 获取，已完成 session 初始化，
+/// 通过 Qwen3Tts::connect() 获取，已完成 session 初始化，
 /// 可直接发送文本进行合成。
-pub struct QwenRealtimeTtsConnection {
+pub struct Qwen3TtsConnection {
     ws: Option<WebSocketStream<MaybeTlsStream<TcpStream>>>,
     state: ConnectionState,
-    config: QwenRealtimeConfig,
+    config: Qwen3TtsConfig,
 }
 
-impl QwenRealtimeTtsConnection {
+impl Qwen3TtsConnection {
     fn build_session_params(&self) -> SessionUpdateParams {
         SessionUpdateParams {
             voice: self.config.voice.as_str().to_string(),
@@ -480,12 +478,12 @@ impl QwenRealtimeTtsConnection {
 }
 
 #[cfg(test)]
-impl QwenRealtimeTtsConnection {
+impl Qwen3TtsConnection {
     pub(crate) fn new_for_test(state: ConnectionState) -> Self {
         Self {
             ws: None,
             state,
-            config: QwenRealtimeConfig {
+            config: Qwen3TtsConfig {
                 model: String::new(),
                 voice: VoiceId::new(""),
                 format: String::new(),
@@ -503,7 +501,7 @@ impl QwenRealtimeTtsConnection {
 
 #[async_trait]
 #[allow(clippy::result_large_err)]
-impl TtsConnection for QwenRealtimeTtsConnection {
+impl TtsConnection for Qwen3TtsConnection {
     fn state(&self) -> ConnectionState {
         self.state
     }
@@ -582,25 +580,25 @@ mod tests {
 
     #[test]
     fn test_c1_defaults() {
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("test-key".into()),
                 ..Default::default()
             },
             ..Default::default()
         });
-        assert_eq!(provider.name(), "qwen-realtime");
-        assert_eq!(provider.base_url, QWEN_REALTIME_DEFAULT_BASE_URL);
-        assert_eq!(provider.model, QWEN_REALTIME_DEFAULT_MODEL);
-        assert_eq!(provider.voice, QWEN_REALTIME_DEFAULT_VOICE);
-        assert_eq!(provider.format, QWEN_REALTIME_DEFAULT_FORMAT);
-        assert_eq!(provider.sample_rate, QWEN_REALTIME_DEFAULT_SAMPLE_RATE);
+        assert_eq!(provider.name(), "qwen3-tts");
+        assert_eq!(provider.base_url, QWEN3_DEFAULT_BASE_URL);
+        assert_eq!(provider.model, QWEN3_DEFAULT_MODEL);
+        assert_eq!(provider.voice, QWEN3_DEFAULT_VOICE);
+        assert_eq!(provider.format, QWEN3_DEFAULT_FORMAT);
+        assert_eq!(provider.sample_rate, QWEN3_DEFAULT_SAMPLE_RATE);
         assert_eq!(provider.mode, RealtimeMode::ServerCommit);
     }
 
     #[test]
     fn test_c2_custom_options() {
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("custom-key".into()),
                 base_url: Some("wss://custom-host/".into()),
@@ -634,7 +632,7 @@ mod tests {
 
     #[test]
     fn test_c3_api_key_from_base() {
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("the-key".into()),
                 ..Default::default()
@@ -643,7 +641,7 @@ mod tests {
         });
         assert_eq!(provider.api_key, "the-key");
 
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: None,
                 ..Default::default()
@@ -655,7 +653,7 @@ mod tests {
 
     #[test]
     fn test_c4_model_from_base() {
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 model: Some("custom-model".into()),
@@ -665,7 +663,7 @@ mod tests {
         });
         assert_eq!(provider.model, "custom-model");
 
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 model: None,
@@ -673,12 +671,12 @@ mod tests {
             },
             ..Default::default()
         });
-        assert_eq!(provider.model, QWEN_REALTIME_DEFAULT_MODEL);
+        assert_eq!(provider.model, QWEN3_DEFAULT_MODEL);
     }
 
     #[test]
     fn test_c5_voice_default() {
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 voice: None,
@@ -686,12 +684,12 @@ mod tests {
             },
             ..Default::default()
         });
-        assert_eq!(provider.voice, QWEN_REALTIME_DEFAULT_VOICE);
+        assert_eq!(provider.voice, QWEN3_DEFAULT_VOICE);
     }
 
     #[test]
     fn test_c6_format_default() {
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 format: None,
@@ -699,12 +697,12 @@ mod tests {
             },
             ..Default::default()
         });
-        assert_eq!(provider.format, QWEN_REALTIME_DEFAULT_FORMAT);
+        assert_eq!(provider.format, QWEN3_DEFAULT_FORMAT);
     }
 
     #[test]
     fn test_c7_sample_rate_default() {
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 ..Default::default()
@@ -712,12 +710,12 @@ mod tests {
             sample_rate: None,
             ..Default::default()
         });
-        assert_eq!(provider.sample_rate, QWEN_REALTIME_DEFAULT_SAMPLE_RATE);
+        assert_eq!(provider.sample_rate, QWEN3_DEFAULT_SAMPLE_RATE);
     }
 
     #[test]
     fn test_c8_sample_rate_custom() {
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 ..Default::default()
@@ -732,7 +730,7 @@ mod tests {
 
     #[test]
     fn test_v1_empty_api_key() {
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("".into()),
                 ..Default::default()
@@ -747,7 +745,7 @@ mod tests {
 
     #[test]
     fn test_v2_valid_api_key() {
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("valid-key".into()),
                 ..Default::default()
@@ -759,7 +757,7 @@ mod tests {
 
     #[test]
     fn test_v3_synthesize_empty_key() {
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("".into()),
                 ..Default::default()
@@ -779,7 +777,7 @@ mod tests {
 
     #[test]
     fn test_p1_build_session_params_default() {
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 ..Default::default()
@@ -787,15 +785,15 @@ mod tests {
             ..Default::default()
         });
         let params = provider.build_session_params();
-        assert_eq!(params.voice, QWEN_REALTIME_DEFAULT_VOICE);
+        assert_eq!(params.voice, QWEN3_DEFAULT_VOICE);
         assert_eq!(params.mode, RealtimeMode::ServerCommit);
-        assert_eq!(params.format, QWEN_REALTIME_DEFAULT_FORMAT);
-        assert_eq!(params.sample_rate, QWEN_REALTIME_DEFAULT_SAMPLE_RATE);
+        assert_eq!(params.format, QWEN3_DEFAULT_FORMAT);
+        assert_eq!(params.sample_rate, QWEN3_DEFAULT_SAMPLE_RATE);
     }
 
     #[test]
     fn test_p2_build_session_params_custom() {
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 voice: Some("Ethan".into()),
@@ -817,20 +815,20 @@ mod tests {
 
     #[test]
     fn test_s1_connection_state_initial() {
-        let conn = QwenRealtimeTtsConnection::new_for_test(ConnectionState::Connected);
+        let conn = Qwen3TtsConnection::new_for_test(ConnectionState::Connected);
         assert_eq!(conn.state(), ConnectionState::Connected);
     }
 
     #[tokio::test]
     async fn test_s2_close_transition() {
-        let mut conn = QwenRealtimeTtsConnection::new_for_test(ConnectionState::Connected);
+        let mut conn = Qwen3TtsConnection::new_for_test(ConnectionState::Connected);
         conn.close().await.unwrap();
         assert_eq!(conn.state(), ConnectionState::Closed);
     }
 
     #[tokio::test]
     async fn test_s3_close_idempotent() {
-        let mut conn = QwenRealtimeTtsConnection::new_for_test(ConnectionState::Connected);
+        let mut conn = Qwen3TtsConnection::new_for_test(ConnectionState::Connected);
         conn.close().await.unwrap();
         conn.close().await.unwrap();
         assert_eq!(conn.state(), ConnectionState::Closed);
@@ -838,7 +836,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_s4_synthesize_after_close() {
-        let mut conn = QwenRealtimeTtsConnection::new_for_test(ConnectionState::Connected);
+        let mut conn = Qwen3TtsConnection::new_for_test(ConnectionState::Connected);
         conn.close().await.unwrap();
         let result = conn.synthesize("text".into()).await;
         assert!(matches!(result, Err(TtsError::ConnectionClosed)));
@@ -846,7 +844,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_s5_speak_stream_after_close() {
-        let mut conn = QwenRealtimeTtsConnection::new_for_test(ConnectionState::Connected);
+        let mut conn = Qwen3TtsConnection::new_for_test(ConnectionState::Connected);
         conn.close().await.unwrap();
         let input: TextStream = Box::pin(futures_util::stream::empty());
         let result = conn.speak_stream(input).await;
@@ -855,7 +853,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_s6_synthesize_with_ws_none() {
-        let mut conn = QwenRealtimeTtsConnection::new_for_test(ConnectionState::Connected);
+        let mut conn = Qwen3TtsConnection::new_for_test(ConnectionState::Connected);
         let result = conn.synthesize("text".into()).await;
         assert!(matches!(result, Err(TtsError::ConnectionClosed)));
     }
@@ -864,7 +862,7 @@ mod tests {
 
     #[test]
     fn test_m1_config_default() {
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 ..Default::default()
@@ -872,16 +870,16 @@ mod tests {
             ..Default::default()
         });
         let config = provider.config();
-        assert_eq!(config.model, QWEN_REALTIME_DEFAULT_MODEL);
-        assert_eq!(config.voice, QWEN_REALTIME_DEFAULT_VOICE);
-        assert_eq!(config.sample_rate, QWEN_REALTIME_DEFAULT_SAMPLE_RATE);
+        assert_eq!(config.model, QWEN3_DEFAULT_MODEL);
+        assert_eq!(config.voice, QWEN3_DEFAULT_VOICE);
+        assert_eq!(config.sample_rate, QWEN3_DEFAULT_SAMPLE_RATE);
         assert!(config.instruction.is_none());
         assert!(!config.optimize_instructions);
     }
 
     #[test]
     fn test_m2_config_custom() {
-        let provider = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+        let provider = Qwen3Tts::new(Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key: Some("k".into()),
                 model: Some("custom-m".into()),

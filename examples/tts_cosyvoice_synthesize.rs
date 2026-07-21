@@ -1,4 +1,4 @@
-/// Qwen TTS - 非流式语音合成示例
+/// CosyVoice TTS - 非流式语音合成示例
 ///
 /// 将文本合成为音频并保存到文件。
 ///
@@ -6,19 +6,19 @@
 ///
 /// ```bash
 /// # 使用 .env 中的 API Key（推荐）
-/// cargo run --example tts_qwen_synthesize -- \
+/// cargo run --example tts_cosyvoice_synthesize -- \
 ///   --text "你好世界，欢迎使用语音合成服务" \
 ///   --output output.mp3
 ///
 /// # 指定音色和语速
-/// cargo run --example tts_qwen_synthesize -- \
+/// cargo run --example tts_cosyvoice_synthesize -- \
 ///   --text "欢迎使用语音合成服务" \
 ///   --output hello.mp3 \
 ///   --voice longxiaochun_v3 \
 ///   --speed 1.2
 ///
 /// # 显式指定 API Key
-/// cargo run --example tts_qwen_synthesize -- \
+/// cargo run --example tts_cosyvoice_synthesize -- \
 ///   --api-key sk-xxx \
 ///   --text "你好" \
 ///   --output hello.mp3
@@ -27,11 +27,14 @@ use std::path::PathBuf;
 
 use clap::Parser;
 
-use univoice::tts::provider::{QwenTts, QwenTtsOption};
+use univoice::tts::provider::{CosyvoiceTts, CosyvoiceTtsOption};
 use univoice::tts::{BaseTtsOption, TtsProvider, TtsRequest};
 
 #[derive(Parser)]
-#[command(name = "tts-qwen-synthesize", about = "Qwen TTS 非流式合成示例")]
+#[command(
+    name = "tts-cosyvoice-synthesize",
+    about = "CosyVoice TTS 非流式合成示例"
+)]
 struct Args {
     /// DashScope API Key（也支持 QWEN_API_KEY 环境变量）
     #[arg(long, env = "QWEN_API_KEY")]
@@ -53,7 +56,7 @@ struct Args {
     #[arg(long)]
     voice: Option<String>,
 
-    /// 模型名称（默认 cosyvoice-v3-flash）
+    /// CosyVoice 模型名称（默认 cosyvoice-v3-flash）
     #[arg(long)]
     model: Option<String>,
 
@@ -94,7 +97,7 @@ async fn main() {
     println!("输出: {}", args.output.display());
 
     // 创建 Qwen TTS 实例
-    let tts = QwenTts::new(QwenTtsOption {
+    let tts = CosyvoiceTts::new(CosyvoiceTtsOption {
         base: BaseTtsOption {
             api_key: Some(args.api_key),
             model: args.model,

@@ -60,8 +60,8 @@ fn env_opt(key: &str) -> Option<String> {
 
 /// 所有支持的 TTS Provider
 pub const TTS_PROVIDER_NAMES: &[&str] = &[
-    "qwen",
-    "qwen-realtime",
+    "cosyvoice",
+    "qwen3-tts",
     "doubao",
     "openai",
     "gemini",
@@ -85,8 +85,8 @@ pub fn create_tts_provider(
     sample_rate: Option<u32>,
 ) -> Result<Box<dyn TtsProvider>, ProviderError> {
     match name {
-        "qwen" => create_qwen_tts(model, voice, format, sample_rate),
-        "qwen-realtime" => create_qwen_realtime_tts(model, voice, format, sample_rate),
+        "cosyvoice" => create_cosyvoice_tts(model, voice, format, sample_rate),
+        "qwen3-tts" => create_qwen3_tts_tts(model, voice, format, sample_rate),
         "doubao" => create_doubao_tts(model, voice, format, sample_rate),
         "openai" => create_openai_tts(model, voice, format, sample_rate),
         "gemini" => create_gemini_tts(model, voice, format, sample_rate),
@@ -98,7 +98,7 @@ pub fn create_tts_provider(
     }
 }
 
-fn create_qwen_tts(
+fn create_cosyvoice_tts(
     model: &str,
     voice: &str,
     format: &str,
@@ -106,8 +106,8 @@ fn create_qwen_tts(
 ) -> Result<Box<dyn TtsProvider>, ProviderError> {
     let api_key = env_opt("QWEN_API_KEY");
 
-    Ok(Box::new(tts_provider::QwenTts::new(
-        tts_provider::QwenTtsOption {
+    Ok(Box::new(tts_provider::CosyvoiceTts::new(
+        tts_provider::CosyvoiceTtsOption {
             base: BaseTtsOption {
                 api_key,
                 model: Some(model.to_string()),
@@ -121,7 +121,7 @@ fn create_qwen_tts(
     )))
 }
 
-fn create_qwen_realtime_tts(
+fn create_qwen3_tts_tts(
     model: &str,
     voice: &str,
     format: &str,
@@ -129,8 +129,8 @@ fn create_qwen_realtime_tts(
 ) -> Result<Box<dyn TtsProvider>, ProviderError> {
     let api_key = env_opt("QWEN_API_KEY");
 
-    Ok(Box::new(tts_provider::QwenRealtimeTts::new(
-        tts_provider::QwenRealtimeTtsOption {
+    Ok(Box::new(tts_provider::Qwen3Tts::new(
+        tts_provider::Qwen3TtsOption {
             base: BaseTtsOption {
                 api_key,
                 model: Some(model.to_string()),
@@ -480,7 +480,7 @@ fn resolve_providers(filter: &[String], all: &[&str]) -> Vec<String> {
     if filter.is_empty() {
         // 默认只测试最常用的几个 Provider
         all.iter()
-            .take(3) // qwen, doubao, openai for TTS; qwen, doubao, glm for ASR
+            .take(3) // cosyvoice, doubao, openai for TTS; qwen, doubao, glm for ASR
             .map(|s| s.to_string())
             .collect()
     } else {

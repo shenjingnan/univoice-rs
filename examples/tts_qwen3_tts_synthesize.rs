@@ -1,4 +1,4 @@
-/// Qwen Realtime TTS - 非流式语音合成示例
+/// Qwen3-TTS - 非流式语音合成示例
 ///
 /// 将文本合成为音频并保存到文件。
 ///
@@ -6,18 +6,18 @@
 ///
 /// ```bash
 /// # 使用 .env 中的 API Key（推荐）
-/// cargo run --example tts_qwen_realtime_synthesize -- \
+/// cargo run --example tts_qwen3_tts_synthesize -- \
 ///   --text "你好世界，欢迎使用语音合成服务" \
 ///   --output output.pcm
 ///
 /// # 指定音色和模型
-/// cargo run --example tts_qwen_realtime_synthesize -- \
+/// cargo run --example tts_qwen3_tts_synthesize -- \
 ///   --text "欢迎使用语音合成服务" \
 ///   --output hello.pcm \
 ///   --voice Cherry
 ///
 /// # 显式指定 API Key
-/// cargo run --example tts_qwen_realtime_synthesize -- \
+/// cargo run --example tts_qwen3_tts_synthesize -- \
 ///   --api-key sk-xxx \
 ///   --text "你好" \
 ///   --output output.pcm
@@ -26,14 +26,11 @@ use std::path::PathBuf;
 
 use clap::Parser;
 
-use univoice::tts::provider::{QwenRealtimeTts, QwenRealtimeTtsOption};
+use univoice::tts::provider::{Qwen3Tts, Qwen3TtsOption};
 use univoice::tts::{BaseTtsOption, TtsProvider, TtsRequest};
 
 #[derive(Parser)]
-#[command(
-    name = "tts-qwen-realtime-synthesize",
-    about = "Qwen Realtime TTS 非流式合成示例"
-)]
+#[command(name = "tts-qwen3-tts-synthesize", about = "Qwen3-TTS 非流式合成示例")]
 struct Args {
     /// DashScope API Key（也支持 QWEN_API_KEY 环境变量）
     #[arg(long, env = "QWEN_API_KEY")]
@@ -51,7 +48,7 @@ struct Args {
     #[arg(short, long, default_value = "output.pcm")]
     output: PathBuf,
 
-    /// 音色名称（默认 Cherry。可选值见 `voice_id::qwen_realtime::*` 常量，如 SERENA/ETHAN/MOMO/STELLA 等）
+    /// 音色名称（默认 Cherry。可选值见 `voice_id::qwen3_tts::*` 常量，如 SERENA/ETHAN/MOMO/STELLA 等）
     #[arg(long)]
     voice: Option<String>,
 
@@ -92,8 +89,8 @@ async fn main() {
     println!("输出: {}", args.output.display());
 
     // 创建 Qwen Realtime TTS 实例
-    // 提示: 可用 `voice_id::qwen_realtime::SERENA.into()` 等常量代替字符串
-    let tts = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+    // 提示: 可用 `voice_id::qwen3_tts::SERENA.into()` 等常量代替字符串
+    let tts = Qwen3Tts::new(Qwen3TtsOption {
         base: BaseTtsOption {
             api_key: Some(args.api_key),
             model: args.model,
