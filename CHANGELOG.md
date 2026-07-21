@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.4](https://github.com/shenjingnan/univoice-rs/compare/v0.1.3...v0.1.4) - 2026-07-21
+
+### Added
+
+- *(tts)* 补充 MiniMax TTS 缺失的 API 字段支持 ([#28](https://github.com/shenjingnan/univoice-rs/pull/28))
+- *(tts)* 添加 MiMo TTS v2.5 提供商支持 ([#26](https://github.com/shenjingnan/univoice-rs/pull/26))
+
+### Other
+
+- *(tts)* 重命名 TTS Provider：qwen → cosyvoice, qwen-realtime → qwen3-tts ([#30](https://github.com/shenjingnan/univoice-rs/pull/30))
+
 ## [0.1.3](https://github.com/shenjingnan/univoice-rs/compare/v0.1.2...v0.1.3) - 2026-07-20
 
 ### Added
