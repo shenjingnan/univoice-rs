@@ -67,6 +67,7 @@ pub const TTS_PROVIDER_NAMES: &[&str] = &[
     "gemini",
     "glm",
     "minimax",
+    "mimo",
     "xfyun",
 ];
 
@@ -91,6 +92,7 @@ pub fn create_tts_provider(
         "gemini" => create_gemini_tts(model, voice, format, sample_rate),
         "glm" => create_glm_tts(model, voice, format, sample_rate),
         "minimax" => create_minimax_tts(model, voice, format, sample_rate),
+        "mimo" => create_mimo_tts(model, voice, format, sample_rate),
         "xfyun" => create_xfyun_tts(model, voice, format, sample_rate),
         _ => Err(ProviderError::UnknownProvider(name.to_string())),
     }
@@ -260,6 +262,28 @@ fn create_minimax_tts(
             language_boost: None,
             subtitle_enable: None,
             channel: None,
+        },
+    )))
+}
+
+fn create_mimo_tts(
+    model: &str,
+    voice: &str,
+    format: &str,
+    _sample_rate: Option<u32>,
+) -> Result<Box<dyn TtsProvider>, ProviderError> {
+    let api_key = env_opt("MIMO_API_KEY");
+
+    Ok(Box::new(tts_provider::MimoTts::new(
+        tts_provider::MimoTtsOption {
+            base: BaseTtsOption {
+                api_key,
+                model: Some(model.to_string()),
+                voice: Some(VoiceId::new(voice)),
+                format: Some(format.to_string()),
+                ..Default::default()
+            },
+            style: None,
         },
     )))
 }
