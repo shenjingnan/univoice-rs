@@ -38,8 +38,8 @@ pub async fn run_benchmark(args: &CliArgs) -> Result<(), Box<dyn std::error::Err
             for provider in &providers {
                 let model = std::env::var(format!("{}_MODEL", provider.to_uppercase()))
                     .unwrap_or_else(|_| match provider.as_str() {
-                        "qwen" => "cosyvoice-v1".to_string(),
-                        "qwen-realtime" => "qwen3-tts-flash-realtime".to_string(),
+                        "cosyvoice" => "cosyvoice-v1".to_string(),
+                        "qwen3-tts" => "qwen3-tts-flash-realtime".to_string(),
                         "doubao" => "default".to_string(),
                         "openai" => "tts-1".to_string(),
                         "gemini" => "gemini-2.0-flash-001".to_string(),
@@ -51,8 +51,8 @@ pub async fn run_benchmark(args: &CliArgs) -> Result<(), Box<dyn std::error::Err
 
                 let voice = std::env::var(format!("{}_VOICE", provider.to_uppercase()))
                     .unwrap_or_else(|_| match provider.as_str() {
-                        "qwen" => "longxiaochun".to_string(),
-                        "qwen-realtime" => "Cherry".to_string(),
+                        "cosyvoice" => "longxiaochun".to_string(),
+                        "qwen3-tts" => "Cherry".to_string(),
                         "doubao" => "zh_female_tianmeixiaoyuan_moon_bigtts".to_string(),
                         "openai" => "alloy".to_string(),
                         "gemini" => "Zephyr".to_string(),
@@ -212,7 +212,7 @@ async fn run_dry_run(
 
     let providers = if args.provider.is_empty() {
         vec![
-            "qwen".to_string(),
+            "cosyvoice".to_string(),
             "doubao".to_string(),
             "openai".to_string(),
         ]

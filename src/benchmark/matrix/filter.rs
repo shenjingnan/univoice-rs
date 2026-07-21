@@ -153,7 +153,7 @@ mod tests {
     #[test]
     fn test_filter_matrix_items_no_filter() {
         let items = vec![MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v1".into(),
             voice: "longwan".into(),
             format: "pcm".into(),
@@ -167,14 +167,14 @@ mod tests {
     fn test_filter_matrix_items_by_model() {
         let items = vec![
             MatrixItem {
-                provider: "qwen".into(),
+                provider: "cosyvoice".into(),
                 model: "cosyvoice-v1".into(),
                 voice: "longwan".into(),
                 format: "pcm".into(),
                 sample_rate: 16000,
             },
             MatrixItem {
-                provider: "qwen".into(),
+                provider: "cosyvoice".into(),
                 model: "cosyvoice-v2".into(),
                 voice: "longwan".into(),
                 format: "pcm".into(),
@@ -194,21 +194,21 @@ mod tests {
     fn test_filter_matrix_items_multi() {
         let items = vec![
             MatrixItem {
-                provider: "qwen".into(),
+                provider: "cosyvoice".into(),
                 model: "v1".into(),
                 voice: "a".into(),
                 format: "pcm".into(),
                 sample_rate: 16000,
             },
             MatrixItem {
-                provider: "qwen".into(),
+                provider: "cosyvoice".into(),
                 model: "v1".into(),
                 voice: "a".into(),
                 format: "mp3".into(),
                 sample_rate: 16000,
             },
             MatrixItem {
-                provider: "qwen".into(),
+                provider: "cosyvoice".into(),
                 model: "v1".into(),
                 voice: "b".into(),
                 format: "pcm".into(),
@@ -229,7 +229,7 @@ mod tests {
     #[test]
     fn test_generate_scenario_name() {
         let item = MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v1".into(),
             voice: "longwan".into(),
             format: "pcm".into(),
@@ -242,7 +242,7 @@ mod tests {
     #[test]
     fn test_generate_asr_scenario_name() {
         let item = ASRMatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "paraformer-realtime-v2".into(),
             language: "zh-CN".into(),
             format: "pcm".into(),
@@ -271,14 +271,14 @@ mod tests {
     fn test_filter_asr_matrix_items() {
         let items = vec![
             ASRMatrixItem {
-                provider: "qwen".into(),
+                provider: "cosyvoice".into(),
                 model: "paraformer-realtime-v2".into(),
                 language: "zh-CN".into(),
                 format: "pcm".into(),
                 sample_rate: Some(16000),
             },
             ASRMatrixItem {
-                provider: "qwen".into(),
+                provider: "cosyvoice".into(),
                 model: "paraformer-realtime-v2".into(),
                 language: "en-US".into(),
                 format: "mp3".into(),

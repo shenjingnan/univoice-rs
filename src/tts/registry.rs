@@ -35,16 +35,16 @@ pub fn get_tts_providers() -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tts::provider::{QwenTts, QwenTtsOption};
+    use crate::tts::provider::{CosyvoiceTts, CosyvoiceTtsOption};
 
     #[test]
     fn test_g1_register_and_create() {
         REGISTRY.lock().unwrap().clear();
 
         register_tts(
-            "qwen",
+            "cosyvoice",
             Box::new(|options| {
-                Box::new(QwenTts::new(QwenTtsOption {
+                Box::new(CosyvoiceTts::new(CosyvoiceTtsOption {
                     base: options,
                     ..Default::default()
                 }))
@@ -55,8 +55,8 @@ mod tests {
             api_key: Some("test-key".into()),
             ..Default::default()
         };
-        let provider = create_tts("qwen", options).unwrap();
-        assert_eq!(provider.name(), "qwen");
+        let provider = create_tts("cosyvoice", options).unwrap();
+        assert_eq!(provider.name(), "cosyvoice");
     }
 
     #[test]
@@ -73,7 +73,7 @@ mod tests {
         register_tts(
             "test_provider",
             Box::new(|_| {
-                Box::new(QwenTts::new(QwenTtsOption {
+                Box::new(CosyvoiceTts::new(CosyvoiceTtsOption {
                     base: BaseTtsOption::default(),
                     ..Default::default()
                 }))
@@ -83,7 +83,7 @@ mod tests {
         register_tts(
             "test_provider",
             Box::new(|_| {
-                Box::new(QwenTts::new(QwenTtsOption {
+                Box::new(CosyvoiceTts::new(CosyvoiceTtsOption {
                     base: BaseTtsOption::default(),
                     ..Default::default()
                 }))

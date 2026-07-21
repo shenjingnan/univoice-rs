@@ -1,4 +1,4 @@
-/// Qwen Realtime TTS - 流式语音合成示例（边发边收）
+/// Qwen3-TTS - 流式语音合成示例（边发边收）
 ///
 /// 将分段文本流式发送到服务端，同时接收音频流并保存到文件。
 /// 适用于 LLM 流式输出转语音等场景。
@@ -7,11 +7,11 @@
 ///
 /// ```bash
 /// # 使用 .env 中的 API Key
-/// cargo run --example tts_qwen_realtime_stream -- \
+/// cargo run --example tts_qwen3_tts_stream -- \
 ///   --output output.pcm
 ///
 /// # 自定义文本分段
-/// cargo run --example tts_qwen_realtime_stream -- \
+/// cargo run --example tts_qwen3_tts_stream -- \
 ///   --text "第一段内容。" --text "第二段内容。" --text "第三段内容。" \
 ///   --output speech.pcm
 /// ```
@@ -20,14 +20,11 @@ use std::path::PathBuf;
 use clap::Parser;
 use futures_util::StreamExt;
 
-use univoice::tts::provider::{QwenRealtimeTts, QwenRealtimeTtsOption};
+use univoice::tts::provider::{Qwen3Tts, Qwen3TtsOption};
 use univoice::tts::{BaseTtsOption, TextStream, TtsProvider};
 
 #[derive(Parser)]
-#[command(
-    name = "tts-qwen-realtime-stream",
-    about = "Qwen Realtime TTS 流式合成示例"
-)]
+#[command(name = "tts-qwen3-tts-stream", about = "Qwen3-TTS 流式合成示例")]
 struct Args {
     /// DashScope API Key（也支持 QWEN_API_KEY 环境变量）
     #[arg(long, env = "QWEN_API_KEY")]
@@ -85,7 +82,7 @@ async fn main() {
     println!("输出: {}", args.output.display());
 
     // 创建 Qwen Realtime TTS 实例
-    let tts = QwenRealtimeTts::new(QwenRealtimeTtsOption {
+    let tts = Qwen3Tts::new(Qwen3TtsOption {
         base: BaseTtsOption {
             api_key: Some(args.api_key),
             model: args.model,

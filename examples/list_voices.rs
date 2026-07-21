@@ -19,19 +19,19 @@ fn main() {
         "doubao" => print_voices("Doubao", &univoice::tts::voices::doubao::list_voices()),
         "glm" => print_voices("GLM", &univoice::tts::voices::glm::list_voices()),
         "minimax" => print_voices("Minimax", &univoice::tts::voices::minimax::list_voices()),
-        "qwen" => {
+        "cosyvoice" => {
             print_voices(
-                "Qwen (CosyVoice v3-flash)",
+                "CosyVoice (cosyvoice-v3-flash)",
                 &univoice::tts::voices::qwen::list_voices_for_model(Some("cosyvoice-v3-flash")),
             );
             print_voices(
-                "Qwen (CosyVoice 全部)",
+                "CosyVoice (全部型号)",
                 &univoice::tts::voices::qwen::list_voices(),
             );
         }
-        "qwen-realtime" => print_voices(
-            "Qwen Realtime",
-            &univoice::tts::voices::qwen_realtime::list_voices(),
+        "qwen3-tts" => print_voices(
+            "Qwen3-TTS",
+            &univoice::tts::voices::qwen3_tts::list_voices(),
         ),
         _ => {
             println!("╔══════════════════════════════════════════════╗");
@@ -43,15 +43,15 @@ fn main() {
             let glm = univoice::tts::voices::glm::list_voices();
             let minimax = univoice::tts::voices::minimax::list_voices();
             let qwen = univoice::tts::voices::qwen::list_voices();
-            let qwen_rt = univoice::tts::voices::qwen_realtime::list_voices();
+            let qwen_rt = univoice::tts::voices::qwen3_tts::list_voices();
 
             println!("  Provider           | 音色数量");
             println!("  -------------------+----------");
             println!("  Doubao             | {:>8}", doubao.len());
             println!("  GLM                | {:>8}", glm.len());
             println!("  Minimax            | {:>8}", minimax.len());
-            println!("  Qwen (CosyVoice)   | {:>8}", qwen.len());
-            println!("  Qwen Realtime      | {:>8}", qwen_rt.len());
+            println!("  CosyVoice          | {:>8}", qwen.len());
+            println!("  Qwen3-TTS          | {:>8}", qwen_rt.len());
             println!("  -------------------+----------");
             let total = doubao.len() + glm.len() + minimax.len() + qwen.len() + qwen_rt.len();
             println!("  总计               | {:>8}", total);
@@ -72,12 +72,12 @@ fn main() {
                 univoice::tts::voices::minimax::DEFAULT_VOICE
             );
             println!(
-                "    Qwen:         {}",
+                "    CosyVoice:    {}",
                 univoice::tts::voices::qwen::DEFAULT_VOICE
             );
             println!(
-                "    Qwen Realtime: {}",
-                univoice::tts::voices::qwen_realtime::DEFAULT_VOICE
+                "    Qwen3-TTS:      {}",
+                univoice::tts::voices::qwen3_tts::DEFAULT_VOICE
             );
             println!();
 
@@ -93,8 +93,8 @@ fn main() {
                 voice_id::minimax::FEMALE_SHAONV
             );
             println!(
-                "    voice_id::qwen_realtime::SERENA -> {}",
-                voice_id::qwen_realtime::SERENA
+                "    voice_id::qwen3_tts::SERENA -> {}",
+                voice_id::qwen3_tts::SERENA
             );
             println!("    voice_id::gemini::PUCK -> {}", voice_id::gemini::PUCK);
         }

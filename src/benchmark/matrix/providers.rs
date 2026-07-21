@@ -8,90 +8,90 @@ use crate::benchmark::matrix::types::{
 
 // ============================== TTS Provider 配置 ==============================
 
-// -------- Qwen --------
+// -------- CosyVoice --------
 
-pub fn qwen_matrix_items() -> Vec<MatrixItem> {
+pub fn cosyvoice_matrix_items() -> Vec<MatrixItem> {
     vec![
         // cosyvoice-v3-flash + longanyang
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-flash".into(),
             voice: "longanyang".into(),
             format: "pcm".into(),
             sample_rate: 8000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-flash".into(),
             voice: "longanyang".into(),
             format: "pcm".into(),
             sample_rate: 16000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-flash".into(),
             voice: "longanyang".into(),
             format: "pcm".into(),
             sample_rate: 22050,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-flash".into(),
             voice: "longanyang".into(),
             format: "pcm".into(),
             sample_rate: 24000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-flash".into(),
             voice: "longanyang".into(),
             format: "pcm".into(),
             sample_rate: 44100,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-flash".into(),
             voice: "longanyang".into(),
             format: "pcm".into(),
             sample_rate: 48000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-flash".into(),
             voice: "longanyang".into(),
             format: "opus".into(),
             sample_rate: 8000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-flash".into(),
             voice: "longanyang".into(),
             format: "opus".into(),
             sample_rate: 16000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-flash".into(),
             voice: "longanyang".into(),
             format: "opus".into(),
             sample_rate: 22050,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-flash".into(),
             voice: "longanyang".into(),
             format: "opus".into(),
             sample_rate: 24000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-flash".into(),
             voice: "longanyang".into(),
             format: "opus".into(),
             sample_rate: 44100,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-flash".into(),
             voice: "longanyang".into(),
             format: "opus".into(),
@@ -99,84 +99,84 @@ pub fn qwen_matrix_items() -> Vec<MatrixItem> {
         },
         // cosyvoice-v3-plus + longanyang
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-plus".into(),
             voice: "longanyang".into(),
             format: "pcm".into(),
             sample_rate: 8000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-plus".into(),
             voice: "longanyang".into(),
             format: "pcm".into(),
             sample_rate: 16000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-plus".into(),
             voice: "longanyang".into(),
             format: "pcm".into(),
             sample_rate: 22050,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-plus".into(),
             voice: "longanyang".into(),
             format: "pcm".into(),
             sample_rate: 24000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-plus".into(),
             voice: "longanyang".into(),
             format: "pcm".into(),
             sample_rate: 44100,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-plus".into(),
             voice: "longanyang".into(),
             format: "pcm".into(),
             sample_rate: 48000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-plus".into(),
             voice: "longanyang".into(),
             format: "opus".into(),
             sample_rate: 8000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-plus".into(),
             voice: "longanyang".into(),
             format: "opus".into(),
             sample_rate: 16000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-plus".into(),
             voice: "longanyang".into(),
             format: "opus".into(),
             sample_rate: 22050,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-plus".into(),
             voice: "longanyang".into(),
             format: "opus".into(),
             sample_rate: 24000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-plus".into(),
             voice: "longanyang".into(),
             format: "opus".into(),
             sample_rate: 44100,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v3-plus".into(),
             voice: "longanyang".into(),
             format: "opus".into(),
@@ -184,84 +184,84 @@ pub fn qwen_matrix_items() -> Vec<MatrixItem> {
         },
         // cosyvoice-v2 + longyingxiao
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v2".into(),
             voice: "longyingxiao".into(),
             format: "pcm".into(),
             sample_rate: 8000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v2".into(),
             voice: "longyingxiao".into(),
             format: "pcm".into(),
             sample_rate: 16000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v2".into(),
             voice: "longyingxiao".into(),
             format: "pcm".into(),
             sample_rate: 22050,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v2".into(),
             voice: "longyingxiao".into(),
             format: "pcm".into(),
             sample_rate: 24000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v2".into(),
             voice: "longyingxiao".into(),
             format: "pcm".into(),
             sample_rate: 44100,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v2".into(),
             voice: "longyingxiao".into(),
             format: "pcm".into(),
             sample_rate: 48000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v2".into(),
             voice: "longyingxiao".into(),
             format: "opus".into(),
             sample_rate: 8000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v2".into(),
             voice: "longyingxiao".into(),
             format: "opus".into(),
             sample_rate: 16000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v2".into(),
             voice: "longyingxiao".into(),
             format: "opus".into(),
             sample_rate: 22050,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v2".into(),
             voice: "longyingxiao".into(),
             format: "opus".into(),
             sample_rate: 24000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v2".into(),
             voice: "longyingxiao".into(),
             format: "opus".into(),
             sample_rate: 44100,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v2".into(),
             voice: "longyingxiao".into(),
             format: "opus".into(),
@@ -269,35 +269,35 @@ pub fn qwen_matrix_items() -> Vec<MatrixItem> {
         },
         // cosyvoice-v1 + longwan
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v1".into(),
             voice: "longwan".into(),
             format: "pcm".into(),
             sample_rate: 8000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v1".into(),
             voice: "longwan".into(),
             format: "pcm".into(),
             sample_rate: 16000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v1".into(),
             voice: "longwan".into(),
             format: "pcm".into(),
             sample_rate: 22050,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v1".into(),
             voice: "longwan".into(),
             format: "pcm".into(),
             sample_rate: 24000,
         },
         MatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "cosyvoice-v1".into(),
             voice: "longwan".into(),
             format: "pcm".into(),
@@ -305,56 +305,56 @@ pub fn qwen_matrix_items() -> Vec<MatrixItem> {
         },
         // qwen3-tts-instruct-flash-realtime + Cherry
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-instruct-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "pcm".into(),
             sample_rate: 8000,
         },
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-instruct-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "pcm".into(),
             sample_rate: 16000,
         },
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-instruct-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "pcm".into(),
             sample_rate: 24000,
         },
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-instruct-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "pcm".into(),
             sample_rate: 48000,
         },
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-instruct-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "opus".into(),
             sample_rate: 8000,
         },
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-instruct-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "opus".into(),
             sample_rate: 16000,
         },
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-instruct-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "opus".into(),
             sample_rate: 24000,
         },
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-instruct-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "opus".into(),
@@ -362,56 +362,56 @@ pub fn qwen_matrix_items() -> Vec<MatrixItem> {
         },
         // qwen3-tts-flash-realtime + Cherry
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "pcm".into(),
             sample_rate: 8000,
         },
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "pcm".into(),
             sample_rate: 16000,
         },
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "pcm".into(),
             sample_rate: 24000,
         },
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "pcm".into(),
             sample_rate: 48000,
         },
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "opus".into(),
             sample_rate: 8000,
         },
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "opus".into(),
             sample_rate: 16000,
         },
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "opus".into(),
             sample_rate: 24000,
         },
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen3-tts-flash-realtime".into(),
             voice: "Cherry".into(),
             format: "opus".into(),
@@ -419,7 +419,7 @@ pub fn qwen_matrix_items() -> Vec<MatrixItem> {
         },
         // qwen3-tts-realtime + Cherry (only 24kHz)
         MatrixItem {
-            provider: "qwen-realtime".into(),
+            provider: "qwen3-tts".into(),
             model: "qwen-tts-realtime".into(),
             voice: "Cherry".into(),
             format: "pcm".into(),
@@ -428,19 +428,19 @@ pub fn qwen_matrix_items() -> Vec<MatrixItem> {
     ]
 }
 
-pub fn qwen_scenario_config() -> MatrixScenarioConfig {
+pub fn cosyvoice_scenario_config() -> MatrixScenarioConfig {
     MatrixScenarioConfig {
-        name: "qwen-matrix",
-        description: "Qwen TTS 矩阵测试：覆盖不同模型、音色、编码、采样率的组合",
+        name: "cosyvoice-matrix",
+        description: "CosyVoice TTS 矩阵测试：覆盖不同模型、音色、编码、采样率的组合",
         iterations: 3,
         timeout_secs: 120,
     }
 }
 
-pub fn qwen_provider_matrix_config() -> ProviderMatrixConfig {
+pub fn cosyvoice_provider_matrix_config() -> ProviderMatrixConfig {
     ProviderMatrixConfig {
-        provider: "qwen",
-        display_name: "通义千问",
+        provider: "cosyvoice",
+        display_name: "CosyVoice",
         items: qwen_matrix_items(),
         scenario_config: qwen_scenario_config(),
     }
@@ -1067,7 +1067,7 @@ pub fn xfyun_provider_matrix_config() -> ProviderMatrixConfig {
 /// 所有 TTS Provider 的矩阵配置
 pub fn all_tts_provider_matrix_configs() -> Vec<ProviderMatrixConfig> {
     vec![
-        qwen_provider_matrix_config(),
+        cosyvoice_provider_matrix_config(),
         doubao_provider_matrix_config(),
         glm_provider_matrix_config(),
         mimo_provider_matrix_config(),
@@ -1090,14 +1090,14 @@ pub fn get_tts_provider_matrix_config(name: &str) -> Option<ProviderMatrixConfig
 pub fn qwen_asr_matrix_items() -> Vec<ASRMatrixItem> {
     vec![
         ASRMatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "paraformer-realtime-v2".into(),
             language: "zh-CN".into(),
             format: "pcm".into(),
             sample_rate: Some(16000),
         },
         ASRMatrixItem {
-            provider: "qwen".into(),
+            provider: "cosyvoice".into(),
             model: "paraformer-realtime-v1".into(),
             language: "zh-CN".into(),
             format: "pcm".into(),
@@ -1249,8 +1249,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_qwen_matrix_count() {
-        assert_eq!(qwen_matrix_items().len(), 58);
+    fn test_cosyvoice_matrix_count() {
+        assert_eq!(cosyvoice_matrix_items().len(), 58);
     }
 
     #[test]
@@ -1310,9 +1310,9 @@ mod tests {
 
     #[test]
     fn test_get_tts_provider_config() {
-        let config = get_tts_provider_matrix_config("qwen").unwrap();
-        assert_eq!(config.provider, "qwen");
-        assert_eq!(config.display_name, "通义千问");
+        let config = get_tts_provider_matrix_config("cosyvoice").unwrap();
+        assert_eq!(config.provider, "cosyvoice");
+        assert_eq!(config.display_name, "CosyVoice");
     }
 
     #[test]
@@ -1328,10 +1328,10 @@ mod tests {
 
     #[test]
     fn test_all_matrix_items_have_provider() {
-        for item in qwen_matrix_items() {
+        for item in cosyvoice_matrix_items() {
             assert!(
-                item.provider == "qwen" || item.provider == "qwen-realtime",
-                "Expected qwen or qwen-realtime, got {}",
+                item.provider == "cosyvoice" || item.provider == "qwen3-tts",
+                "Expected cosyvoice or qwen3-tts, got {}",
                 item.provider
             );
         }

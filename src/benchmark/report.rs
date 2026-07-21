@@ -303,12 +303,12 @@ mod tests {
 
     #[test]
     fn test_generate_report_with_data() {
-        let tts = vec![make_summary("qwen", "synthesize", "tts", 200.0)];
+        let tts = vec![make_summary("cosyvoice", "synthesize", "tts", 200.0)];
         let asr = vec![make_summary("qwen", "listen_stream", "asr", 500.0)];
         let report = generate_markdown_report(&tts, &asr, None);
         assert!(report.contains("TTS 性能指标"));
         assert!(report.contains("ASR 性能指标"));
-        assert!(report.contains("qwen"));
+        assert!(report.contains("cosyvoice"));
     }
 
     #[test]

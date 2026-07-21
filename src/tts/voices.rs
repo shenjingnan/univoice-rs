@@ -1841,7 +1841,7 @@ pub mod minimax {
 }
 
 // ============================================================================
-// Qwen / CosyVoice 音色
+// CosyVoice 音色
 // ============================================================================
 pub mod qwen {
     use crate::tts::types::TtsVoice;
@@ -2071,7 +2071,7 @@ pub mod qwen {
     /// 所有音色的分组名称列表
     pub const ALL_VOICE_NAMES: &[&str] = &[];
 
-    /// 构建 Qwen/CosyVoice 音色列表
+    /// 构建 CosyVoice 音色列表
     pub fn list_voices_for_model(model: Option<&str>) -> Vec<TtsVoice> {
         let model = model.unwrap_or(DEFAULT_MODEL);
         let voice_names: &[&str] = match model {
@@ -2155,15 +2155,15 @@ pub mod qwen {
 }
 
 // ============================================================================
-// Qwen Realtime TTS 音色
+// Qwen3-TTS 音色
 // ============================================================================
-pub mod qwen_realtime {
+pub mod qwen3_tts {
     use crate::tts::types::TtsVoice;
 
     /// 默认音色
     pub const DEFAULT_VOICE: &str = "Cherry";
 
-    /// Qwen Realtime TTS 全部音色
+    /// Qwen3-TTS 全部音色
     pub const ALL: &[(&str, &str, &str)] = &[
         ("Cherry", "Cherry", "en-US"),
         ("Serena", "Serena", "en-US"),
@@ -2215,7 +2215,7 @@ pub mod qwen_realtime {
         ("Kiki", "Kiki", "en-US"),
     ];
 
-    /// 构建 Qwen Realtime TTS 音色列表
+    /// 构建 Qwen3-TTS 音色列表
     pub fn list_voices() -> Vec<TtsVoice> {
         ALL.iter()
             .map(|&(id, name, lang)| TtsVoice {

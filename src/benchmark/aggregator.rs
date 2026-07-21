@@ -241,10 +241,16 @@ mod tests {
 
     #[test]
     fn test_aggregate_single() {
-        let results = vec![make_result("qwen", "synthesize", "tts", "success", 200.0)];
+        let results = vec![make_result(
+            "cosyvoice",
+            "synthesize",
+            "tts",
+            "success",
+            200.0,
+        )];
         let summaries = aggregate_by_scenario(&results);
         assert_eq!(summaries.len(), 1);
-        assert_eq!(summaries[0].provider, "qwen");
+        assert_eq!(summaries[0].provider, "cosyvoice");
         assert_eq!(summaries[0].sample_count, 1);
         assert_eq!(summaries[0].success_count, 1);
     }
@@ -252,9 +258,9 @@ mod tests {
     #[test]
     fn test_aggregate_multiple() {
         let results = vec![
-            make_result("qwen", "synthesize", "tts", "success", 100.0),
-            make_result("qwen", "synthesize", "tts", "success", 200.0),
-            make_result("qwen", "synthesize", "tts", "success", 300.0),
+            make_result("cosyvoice", "synthesize", "tts", "success", 100.0),
+            make_result("cosyvoice", "synthesize", "tts", "success", 200.0),
+            make_result("cosyvoice", "synthesize", "tts", "success", 300.0),
         ];
         let summaries = aggregate_by_scenario(&results);
         assert_eq!(summaries.len(), 1);
@@ -264,8 +270,8 @@ mod tests {
     #[test]
     fn test_aggregate_with_failure() {
         let results = vec![
-            make_result("qwen", "synthesize", "tts", "success", 100.0),
-            make_result("qwen", "synthesize", "tts", "error", 0.0),
+            make_result("cosyvoice", "synthesize", "tts", "success", 100.0),
+            make_result("cosyvoice", "synthesize", "tts", "error", 0.0),
         ];
         let summaries = aggregate_by_scenario(&results);
         assert_eq!(summaries.len(), 1);
