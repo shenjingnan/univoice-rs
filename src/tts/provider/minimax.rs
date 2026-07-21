@@ -16,7 +16,8 @@ use reqwest::header::{AUTHORIZATION, CONTENT_TYPE};
 use crate::tts::error::TtsError;
 use crate::tts::protocol::minimax::{
     self, AudioSetting, MINIMAX_DEFAULT_BASE_URL, MINIMAX_DEFAULT_MODEL, MINIMAX_DEFAULT_VOICE,
-    MinimaxStreamEvent, MinimaxTtsRequest, VoiceSetting,
+    MinimaxStreamEvent, MinimaxTtsRequest, PronunciationDict, StreamOptions, TimbreWeight,
+    VoiceModify, VoiceSetting,
 };
 use crate::tts::traits::TtsProvider;
 use crate::tts::types::{
@@ -53,6 +54,24 @@ pub struct MinimaxTtsOption {
     pub subtitle_enable: Option<bool>,
     /// 声道数（1=单声道，2=双声道）
     pub channel: Option<u32>,
+    /// 文本规范化（默认 false）
+    pub text_normalization: Option<bool>,
+    /// LaTeX 公式朗读（默认 false）
+    pub latex_read: Option<bool>,
+    /// 恒定比特率控制，仅流式 mp3 生效（默认 false）
+    pub force_cbr: Option<bool>,
+    /// 音频末尾添加标识（默认 false）
+    pub aigc_watermark: Option<bool>,
+    /// 字幕粒度（sentence / word / word_streaming）
+    pub subtitle_type: Option<String>,
+    /// 流式排除最后一个 chunk 的拼接音频
+    pub exclude_aggregated_audio: Option<bool>,
+    /// 发音词典（tone 数组）
+    pub pronunciation_dict: Option<Vec<String>>,
+    /// 混合音色权重
+    pub timbre_weights: Option<Vec<TimbreWeight>>,
+    /// 声音效果器
+    pub voice_modify: Option<VoiceModify>,
 }
 
 // ============================== MinimaxTts ==============================
@@ -73,6 +92,15 @@ pub struct MinimaxTts {
     language_boost: Option<String>,
     subtitle_enable: Option<bool>,
     channel: Option<u32>,
+    text_normalization: Option<bool>,
+    latex_read: Option<bool>,
+    force_cbr: Option<bool>,
+    aigc_watermark: Option<bool>,
+    subtitle_type: Option<String>,
+    pronunciation_dict: Option<Vec<String>>,
+    timbre_weights: Option<Vec<TimbreWeight>>,
+    voice_modify: Option<VoiceModify>,
+    exclude_aggregated_audio: Option<bool>,
     client: reqwest::Client,
 }
 
@@ -110,6 +138,15 @@ impl MinimaxTts {
             language_boost: options.language_boost,
             subtitle_enable: options.subtitle_enable,
             channel: options.channel,
+            text_normalization: options.text_normalization,
+            latex_read: options.latex_read,
+            force_cbr: options.force_cbr,
+            aigc_watermark: options.aigc_watermark,
+            subtitle_type: options.subtitle_type,
+            pronunciation_dict: options.pronunciation_dict,
+            timbre_weights: options.timbre_weights,
+            voice_modify: options.voice_modify,
+            exclude_aggregated_audio: options.exclude_aggregated_audio,
             client,
         }
     }
@@ -136,15 +173,29 @@ impl MinimaxTts {
                 vol: self.volume,
                 pitch: self.pitch,
                 emotion: self.emotion.clone(),
+                text_normalization: self.text_normalization,
+                latex_read: self.latex_read,
             },
             audio_setting: Some(AudioSetting {
                 format: self.format.clone(),
                 sample_rate: self.sample_rate,
                 bitrate: self.bitrate,
                 channel: self.channel,
+                force_cbr: self.force_cbr,
             }),
             language_boost: self.language_boost.clone(),
             subtitle_enable: self.subtitle_enable,
+            pronunciation_dict: self
+                .pronunciation_dict
+                .clone()
+                .map(|tones| PronunciationDict { tone: Some(tones) }),
+            timbre_weights: self.timbre_weights.clone(),
+            voice_modify: self.voice_modify.clone(),
+            stream_options: self.exclude_aggregated_audio.map(|v| StreamOptions {
+                exclude_aggregated_audio: Some(v),
+            }),
+            subtitle_type: self.subtitle_type.clone(),
+            aigc_watermark: self.aigc_watermark,
         }
     }
 }
@@ -404,6 +455,23 @@ mod tests {
             language_boost: Some("Chinese".into()),
             subtitle_enable: Some(true),
             channel: Some(2),
+            text_normalization: Some(true),
+            latex_read: Some(false),
+            force_cbr: Some(true),
+            aigc_watermark: Some(true),
+            subtitle_type: Some("word".into()),
+            exclude_aggregated_audio: Some(true),
+            pronunciation_dict: Some(vec!["foo/bar".into()]),
+            timbre_weights: Some(vec![TimbreWeight {
+                voice_id: "va".into(),
+                weight: 100,
+            }]),
+            voice_modify: Some(VoiceModify {
+                pitch: Some(50),
+                intensity: None,
+                timbre: None,
+                sound_effects: None,
+            }),
         });
         assert_eq!(p.api_key, "key");
         assert_eq!(p.base_url, "https://custom.example.com/v1/t2a_v2");
@@ -419,6 +487,15 @@ mod tests {
         assert_eq!(p.language_boost, Some("Chinese".into()));
         assert_eq!(p.subtitle_enable, Some(true));
         assert_eq!(p.channel, Some(2));
+        assert_eq!(p.text_normalization, Some(true));
+        assert_eq!(p.latex_read, Some(false));
+        assert_eq!(p.force_cbr, Some(true));
+        assert_eq!(p.aigc_watermark, Some(true));
+        assert_eq!(p.subtitle_type, Some("word".into()));
+        assert_eq!(p.exclude_aggregated_audio, Some(true));
+        assert_eq!(p.pronunciation_dict, Some(vec!["foo/bar".into()]));
+        assert!(p.timbre_weights.is_some());
+        assert!(p.voice_modify.is_some());
     }
 
     // -------- c3 api_key 来源 --------
@@ -547,6 +624,23 @@ mod tests {
             language_boost: Some("Chinese".into()),
             subtitle_enable: Some(true),
             channel: Some(2),
+            text_normalization: Some(true),
+            latex_read: Some(false),
+            force_cbr: Some(true),
+            aigc_watermark: Some(true),
+            subtitle_type: Some("word".into()),
+            exclude_aggregated_audio: Some(true),
+            pronunciation_dict: Some(vec!["resume/(rɪˈzjuːm)".into()]),
+            timbre_weights: Some(vec![TimbreWeight {
+                voice_id: "voice-a".into(),
+                weight: 50,
+            }]),
+            voice_modify: Some(VoiceModify {
+                pitch: Some(30),
+                intensity: None,
+                timbre: None,
+                sound_effects: None,
+            }),
         });
         let req = p.build_request("测试", true);
         assert_eq!(req.model, "speech-2.6-turbo");
@@ -555,13 +649,64 @@ mod tests {
         assert_eq!(req.voice_setting.vol, Some(5.0));
         assert_eq!(req.voice_setting.pitch, Some(3));
         assert_eq!(req.voice_setting.emotion, Some("happy".into()));
+        assert_eq!(req.voice_setting.text_normalization, Some(true));
+        assert_eq!(req.voice_setting.latex_read, Some(false));
         let audio = req.audio_setting.unwrap();
         assert_eq!(audio.format, "wav");
         assert_eq!(audio.sample_rate, Some(24000));
         assert_eq!(audio.bitrate, Some(64000));
         assert_eq!(audio.channel, Some(2));
+        assert_eq!(audio.force_cbr, Some(true));
         assert_eq!(req.language_boost, Some("Chinese".into()));
         assert_eq!(req.subtitle_enable, Some(true));
+        assert_eq!(req.subtitle_type, Some("word".into()));
+        assert_eq!(req.aigc_watermark, Some(true));
+        assert!(req.pronunciation_dict.is_some());
+        assert!(req.timbre_weights.is_some());
+        assert!(req.voice_modify.is_some());
+        assert!(req.stream_options.is_some());
+    }
+
+    // -------- b4 发音词典映射 --------
+
+    #[test]
+    fn test_b4_pronunciation_dict_mapping() {
+        let p = MinimaxTts::new(MinimaxTtsOption {
+            base: BaseTtsOption {
+                api_key: Some("k".into()),
+                ..Default::default()
+            },
+            pronunciation_dict: Some(vec!["处理/(chu3)(li3)".into(), "危险/dangerous".into()]),
+            ..Default::default()
+        });
+        let req = p.build_request("测试", false);
+        let dict = req.pronunciation_dict.unwrap();
+        assert_eq!(dict.tone.as_ref().unwrap().len(), 2);
+        assert_eq!(dict.tone.as_ref().unwrap()[0], "处理/(chu3)(li3)");
+        assert_eq!(dict.tone.as_ref().unwrap()[1], "危险/dangerous");
+    }
+
+    // -------- b5 新字段默认 None --------
+
+    #[test]
+    fn test_b5_new_fields_default_none() {
+        let p = MinimaxTts::new(MinimaxTtsOption {
+            base: BaseTtsOption {
+                api_key: Some("k".into()),
+                ..Default::default()
+            },
+            ..Default::default()
+        });
+        let req = p.build_request("hi", false);
+        assert!(req.voice_setting.text_normalization.is_none());
+        assert!(req.voice_setting.latex_read.is_none());
+        assert_eq!(req.audio_setting.as_ref().unwrap().force_cbr, None);
+        assert!(req.pronunciation_dict.is_none());
+        assert!(req.timbre_weights.is_none());
+        assert!(req.voice_modify.is_none());
+        assert!(req.stream_options.is_none());
+        assert!(req.subtitle_type.is_none());
+        assert!(req.aigc_watermark.is_none());
     }
 
     // -------- l1 list_voices --------

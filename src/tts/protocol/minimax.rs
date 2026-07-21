@@ -40,6 +40,18 @@ pub struct MinimaxTtsRequest {
     pub language_boost: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub subtitle_enable: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pronunciation_dict: Option<PronunciationDict>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timbre_weights: Option<Vec<TimbreWeight>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub voice_modify: Option<VoiceModify>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stream_options: Option<StreamOptions>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subtitle_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub aigc_watermark: Option<bool>,
 }
 
 /// 语音设置
@@ -54,6 +66,10 @@ pub struct VoiceSetting {
     pub pitch: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub emotion: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub text_normalization: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub latex_read: Option<bool>,
 }
 
 /// 音频设置
@@ -66,6 +82,42 @@ pub struct AudioSetting {
     pub bitrate: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub channel: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub force_cbr: Option<bool>,
+}
+
+/// 发音词典
+#[derive(Debug, Clone, Serialize)]
+pub struct PronunciationDict {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tone: Option<Vec<String>>,
+}
+
+/// 混合音色权重
+#[derive(Debug, Clone, Serialize)]
+pub struct TimbreWeight {
+    pub voice_id: String,
+    pub weight: i32,
+}
+
+/// 声音效果器
+#[derive(Debug, Clone, Serialize)]
+pub struct VoiceModify {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pitch: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub intensity: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timbre: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sound_effects: Option<String>,
+}
+
+/// 流式选项
+#[derive(Debug, Clone, Serialize)]
+pub struct StreamOptions {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub exclude_aggregated_audio: Option<bool>,
 }
 
 // ============================== 响应体 ==============================
@@ -90,6 +142,8 @@ pub struct ResponseData {
     pub audio: Option<String>,
     #[serde(default)]
     pub status: Option<i32>,
+    #[serde(default)]
+    pub subtitle_file: Option<String>,
 }
 
 /// 额外信息
@@ -280,10 +334,18 @@ mod tests {
                 vol: None,
                 pitch: None,
                 emotion: None,
+                text_normalization: None,
+                latex_read: None,
             },
             audio_setting: None,
             language_boost: None,
             subtitle_enable: None,
+            pronunciation_dict: None,
+            timbre_weights: None,
+            voice_modify: None,
+            stream_options: None,
+            subtitle_type: None,
+            aigc_watermark: None,
         };
         let json = serde_json::to_string(&req).unwrap();
         assert!(json.contains(r#""model":"speech-2.8-hd""#));
@@ -307,15 +369,24 @@ mod tests {
                 vol: Some(5.0),
                 pitch: Some(2),
                 emotion: Some("happy".into()),
+                text_normalization: None,
+                latex_read: None,
             },
             audio_setting: Some(AudioSetting {
                 format: "mp3".into(),
                 sample_rate: Some(24000),
                 bitrate: Some(128000),
                 channel: Some(1),
+                force_cbr: None,
             }),
             language_boost: Some("Chinese".into()),
             subtitle_enable: Some(true),
+            pronunciation_dict: None,
+            timbre_weights: None,
+            voice_modify: None,
+            stream_options: None,
+            subtitle_type: None,
+            aigc_watermark: None,
         };
         let json = serde_json::to_string(&req).unwrap();
         assert!(json.contains(r#""stream":true"#));
@@ -328,6 +399,145 @@ mod tests {
         assert!(json.contains(r#""channel":1"#));
         assert!(json.contains(r#""language_boost":"Chinese""#));
         assert!(json.contains(r#""subtitle_enable":true"#));
+    }
+
+    // ============ 新类型序列化 ============
+
+    #[test]
+    fn test_n1_pronunciation_dict_serialize() {
+        let dict = PronunciationDict {
+            tone: Some(vec!["处理/(chu3)(li3)".into(), "危险/dangerous".into()]),
+        };
+        let json = serde_json::to_string(&dict).unwrap();
+        assert!(json.contains(r#""tone":["#));
+        assert!(json.contains("处理/(chu3)(li3)"));
+        assert!(json.contains("危险/dangerous"));
+    }
+
+    #[test]
+    fn test_n2_pronunciation_dict_none() {
+        let dict = PronunciationDict { tone: None };
+        let json = serde_json::to_string(&dict).unwrap();
+        assert_eq!(json, "{}");
+    }
+
+    #[test]
+    fn test_n3_timbre_weight_serialize() {
+        let weights = vec![
+            TimbreWeight {
+                voice_id: "female-chengshu".into(),
+                weight: 30,
+            },
+            TimbreWeight {
+                voice_id: "female-tianmei".into(),
+                weight: 70,
+            },
+        ];
+        let json = serde_json::to_string(&weights).unwrap();
+        assert!(json.contains(r#""voice_id":"female-chengshu""#));
+        assert!(json.contains(r#""weight":30"#));
+        assert!(json.contains(r#""voice_id":"female-tianmei""#));
+        assert!(json.contains(r#""weight":70"#));
+    }
+
+    #[test]
+    fn test_n4_voice_modify_serialize() {
+        let vm = VoiceModify {
+            pitch: Some(50),
+            intensity: Some(-30),
+            timbre: Some(20),
+            sound_effects: Some("spacious_echo".into()),
+        };
+        let json = serde_json::to_string(&vm).unwrap();
+        assert!(json.contains(r#""pitch":50"#));
+        assert!(json.contains(r#""intensity":-30"#));
+        assert!(json.contains(r#""timbre":20"#));
+        assert!(json.contains(r#""sound_effects":"spacious_echo""#));
+    }
+
+    #[test]
+    fn test_n5_voice_modify_partial() {
+        let vm = VoiceModify {
+            pitch: None,
+            intensity: None,
+            timbre: None,
+            sound_effects: Some("robotic".into()),
+        };
+        let json = serde_json::to_string(&vm).unwrap();
+        assert_eq!(json, r#"{"sound_effects":"robotic"}"#);
+    }
+
+    #[test]
+    fn test_n6_stream_options_serialize() {
+        let opts = StreamOptions {
+            exclude_aggregated_audio: Some(true),
+        };
+        let json = serde_json::to_string(&opts).unwrap();
+        assert_eq!(json, r#"{"exclude_aggregated_audio":true}"#);
+    }
+
+    #[test]
+    fn test_n7_stream_options_default() {
+        let opts = StreamOptions {
+            exclude_aggregated_audio: None,
+        };
+        let json = serde_json::to_string(&opts).unwrap();
+        assert_eq!(json, "{}");
+    }
+
+    #[test]
+    fn test_n8_request_serialize_with_all_new_fields() {
+        let req = MinimaxTtsRequest {
+            model: "speech-2.8-hd".into(),
+            text: "你好".into(),
+            stream: Some(true),
+            voice_setting: VoiceSetting {
+                voice_id: "male-qn-qingse".into(),
+                speed: None,
+                vol: None,
+                pitch: None,
+                emotion: None,
+                text_normalization: Some(true),
+                latex_read: Some(false),
+            },
+            audio_setting: Some(AudioSetting {
+                format: "mp3".into(),
+                sample_rate: None,
+                bitrate: None,
+                channel: None,
+                force_cbr: Some(true),
+            }),
+            language_boost: None,
+            subtitle_enable: Some(true),
+            pronunciation_dict: Some(PronunciationDict {
+                tone: Some(vec!["resume/(rɪˈzjuːm)".into()]),
+            }),
+            timbre_weights: Some(vec![TimbreWeight {
+                voice_id: "voice-a".into(),
+                weight: 50,
+            }]),
+            voice_modify: Some(VoiceModify {
+                pitch: Some(30),
+                intensity: None,
+                timbre: None,
+                sound_effects: None,
+            }),
+            stream_options: Some(StreamOptions {
+                exclude_aggregated_audio: Some(true),
+            }),
+            subtitle_type: Some("word".into()),
+            aigc_watermark: Some(true),
+        };
+        let json = serde_json::to_string(&req).unwrap();
+        assert!(json.contains(r#""text_normalization":true"#));
+        assert!(json.contains(r#""latex_read":false"#));
+        assert!(json.contains(r#""force_cbr":true"#));
+        assert!(json.contains(r#""pronunciation_dict""#));
+        assert!(json.contains(r#""timbre_weights""#));
+        assert!(json.contains(r#""voice_modify""#));
+        assert!(json.contains(r#""stream_options""#));
+        assert!(json.contains(r#""subtitle_type":"word""#));
+        assert!(json.contains(r#""aigc_watermark":true"#));
     }
 
     // ============ 响应体反序列化 ============
@@ -364,6 +574,27 @@ mod tests {
         let json = r#"{"data": null, "base_resp": { "status_code": 0, "status_msg": "success" }}"#;
         let resp: MinimaxResponse = serde_json::from_str(json).unwrap();
         assert!(resp.data.is_none());
+    }
+
+    #[test]
+    fn test_m5b_response_with_subtitle_file() {
+        let json = r#"{
+            "data": { "audio": "00", "status": 2, "subtitle_file": "https://example.com/subtitle.json" },
+            "base_resp": { "status_code": 0 }
+        }"#;
+        let resp: MinimaxResponse = serde_json::from_str(json).unwrap();
+        let data = resp.data.unwrap();
+        assert_eq!(
+            data.subtitle_file.as_deref(),
+            Some("https://example.com/subtitle.json")
+        );
+    }
+
+    #[test]
+    fn test_m5c_response_subtitle_file_missing() {
+        let json = r#"{"data":{"audio":"00","status":2},"base_resp":{"status_code":0}}"#;
+        let resp: MinimaxResponse = serde_json::from_str(json).unwrap();
+        assert!(resp.data.unwrap().subtitle_file.is_none());
     }
 
     // ============ hex 编解码 ============
