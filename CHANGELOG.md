@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.5](https://github.com/shenjingnan/univoice-rs/compare/v0.1.4...v0.1.5) - 2026-07-27
+
+### Added
+
+- *(example)* 添加 Doubao ASR 实时流式识别 + VAD 判停示例 ([#31](https://github.com/shenjingnan/univoice-rs/pull/31))
+
+### Other
+
+- *(deps)* bump base64 from 0.22.1 to 0.23.0 ([#35](https://github.com/shenjingnan/univoice-rs/pull/35))
+- *(deps)* bump clap from 4.6.2 to 4.6.3 ([#36](https://github.com/shenjingnan/univoice-rs/pull/36))
+- *(deps)* bump tokio from 1.53.0 to 1.53.1 ([#34](https://github.com/shenjingnan/univoice-rs/pull/34))
+- *(deps)* bump tokio-stream from 0.1.18 to 0.1.19 ([#33](https://github.com/shenjingnan/univoice-rs/pull/33))
+
 ## [0.1.4](https://github.com/shenjingnan/univoice-rs/compare/v0.1.3...v0.1.4) - 2026-07-21
 
 ### Added
