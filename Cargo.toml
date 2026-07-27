@@ -70,7 +70,7 @@ async-stream = "0.3"                                    # 流式宏
 reqwest = { version = "0.13", default-features = false, features = ["multipart", "stream", "native-tls"] }
 
 # Base64 编解码（用于 MIMO ASR data URL + Xfyun 鉴权）
-base64 = "0.22"
+base64 = "0.23"
 
 # Xfyun ASR 鉴权（HMAC-SHA256 签名）
 hmac = "0.13"
