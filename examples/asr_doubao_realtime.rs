@@ -15,8 +15,7 @@
 ///
 /// ```bash
 /// cargo run --example asr_doubao_realtime -- \
-///   --app-key YOUR_APP_KEY \
-///   --access-key YOUR_ACCESS_KEY \
+///   --api-key YOUR_API_KEY \
 ///   --file speech.pcm
 /// ```
 use std::path::PathBuf;
@@ -36,13 +35,9 @@ use univoice::asr::{
     about = "Doubao ASR 实时音频流式识别 + VAD 判停"
 )]
 struct Args {
-    /// 火山引擎 App Key（也支持 DOUBAO_APP_KEY 环境变量）
-    #[arg(long, env = "DOUBAO_APP_KEY")]
-    app_key: String,
-
-    /// 火山引擎 Access Key（也支持 DOUBAO_ACCESS_TOKEN 环境变量）
-    #[arg(long, env = "DOUBAO_ACCESS_TOKEN")]
-    access_key: String,
+    /// 火山引擎新版控制台 API Key（也支持 DOUBAO_API_KEY 环境变量）
+    #[arg(long, env = "DOUBAO_API_KEY")]
+    api_key: String,
 
     /// PCM 音频文件路径
     #[arg(short, long)]
@@ -75,9 +70,8 @@ async fn main() {
     let args = Args::parse();
 
     // 验证参数
-    if args.app_key.is_empty() || args.access_key.is_empty() {
-        eprintln!("错误: 请提供 --app-key 和 --access-key");
-        eprintln!("也可以设置 DOUBAO_APP_KEY 和 DOUBAO_ACCESS_TOKEN 环境变量");
+    if args.api_key.is_empty() {
+        eprintln!("错误: 请提供 --api-key 或设置 DOUBAO_API_KEY 环境变量");
         std::process::exit(1);
     }
 
@@ -130,8 +124,7 @@ async fn main() {
             language: Some("zh-CN".into()),
             ..Default::default()
         },
-        app_key: Some(args.app_key),
-        access_key: Some(args.access_key),
+        api_key: Some(args.api_key),
         mode: DoubaoAsrMode::Streaming, // 首遍识别，判停即返回
         sample_rate: args.sample_rate,
         bits: args.bits,

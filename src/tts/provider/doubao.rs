@@ -69,8 +69,8 @@ struct DoubaoTtsConfig {
 #[derive(Debug, Clone, Default)]
 pub struct DoubaoTtsOption {
     pub base: BaseTtsOption,
-    pub app_id: Option<String>,
-    pub access_token: Option<String>,
+    /// 新版控制台 API Key（X-Api-Key 鉴权）
+    pub api_key: Option<String>,
     pub resource_id: Option<String>,
     pub sample_rate: Option<u32>,
     pub enable_timestamp: Option<bool>,
@@ -82,8 +82,7 @@ pub struct DoubaoTtsOption {
 
 /// 豆包 TTS Provider
 pub struct DoubaoTts {
-    app_id: String,
-    access_token: String,
+    api_key: String,
     resource_id: String,
     base_url: String,
     voice: VoiceId,
@@ -96,8 +95,10 @@ impl DoubaoTts {
     pub fn new(options: DoubaoTtsOption) -> Self {
         let base = &options.base;
         Self {
-            app_id: options.app_id.unwrap_or_default(),
-            access_token: options.access_token.unwrap_or_default(),
+            api_key: options
+                .api_key
+                .or_else(|| base.api_key.clone())
+                .unwrap_or_default(),
             resource_id: options
                 .resource_id
                 .clone()
@@ -144,11 +145,9 @@ impl DoubaoTts {
                 .parse()
                 .unwrap(),
         );
-        // 认证头
+        // 认证头（新版控制台：仅 X-Api-Key）
         req.headers_mut()
-            .insert("X-Api-App-Key", self.app_id.parse().unwrap());
-        req.headers_mut()
-            .insert("X-Api-Access-Key", self.access_token.parse().unwrap());
+            .insert("X-Api-Key", self.api_key.parse().unwrap());
         req.headers_mut()
             .insert("X-Api-Resource-Id", self.resource_id.parse().unwrap());
         req.headers_mut().insert(
@@ -161,14 +160,9 @@ impl DoubaoTts {
 
     /// 验证必要参数
     fn ensure_valid(&self) -> Result<(), TtsError> {
-        if self.app_id.is_empty() {
+        if self.api_key.is_empty() {
             return Err(TtsError::InvalidParameter(
-                "appId is required for Doubao TTS".into(),
-            ));
-        }
-        if self.access_token.is_empty() {
-            return Err(TtsError::InvalidParameter(
-                "accessToken is required for Doubao TTS".into(),
+                "apiKey is required for Doubao TTS".into(),
             ));
         }
         Ok(())
@@ -824,13 +818,11 @@ mod tests {
     #[test]
     fn test_c1_defaults() {
         let provider = DoubaoTts::new(DoubaoTtsOption {
-            app_id: Some("test-app".into()),
-            access_token: Some("test-token".into()),
+            api_key: Some("test-key".into()),
             ..Default::default()
         });
         assert_eq!(provider.name(), "doubao");
-        assert_eq!(provider.app_id, "test-app");
-        assert_eq!(provider.access_token, "test-token");
+        assert_eq!(provider.api_key, "test-key");
         assert_eq!(provider.resource_id, DOUBAO_DEFAULT_RESOURCE_ID);
         assert_eq!(provider.base_url, DOUBAO_DEFAULT_BASE_URL);
         assert_eq!(provider.voice, DOUBAO_DEFAULT_VOICE);
@@ -848,14 +840,12 @@ mod tests {
                 format: Some("wav".into()),
                 ..Default::default()
             },
-            app_id: Some("custom-app".into()),
-            access_token: Some("custom-token".into()),
+            api_key: Some("custom-key".into()),
             resource_id: Some("custom-resource".into()),
             sample_rate: Some(16000),
             enable_timestamp: Some(true),
         });
-        assert_eq!(provider.app_id, "custom-app");
-        assert_eq!(provider.access_token, "custom-token");
+        assert_eq!(provider.api_key, "custom-key");
         assert_eq!(provider.resource_id, "custom-resource");
         assert_eq!(provider.base_url, "wss://custom-host/");
         assert_eq!(provider.voice, "custom_voice");
@@ -865,23 +855,24 @@ mod tests {
     }
 
     #[test]
-    fn test_c3_app_id_empty_default() {
+    fn test_c3_api_key_empty_default() {
         let provider = DoubaoTts::new(DoubaoTtsOption {
-            app_id: Some("".into()),
-            access_token: Some("token".into()),
+            api_key: Some("".into()),
             ..Default::default()
         });
-        assert_eq!(provider.app_id, "");
+        assert_eq!(provider.api_key, "");
     }
 
     #[test]
-    fn test_c4_access_token_empty_default() {
+    fn test_c4_api_key_from_base() {
         let provider = DoubaoTts::new(DoubaoTtsOption {
-            app_id: Some("app".into()),
-            access_token: Some("".into()),
+            base: BaseTtsOption {
+                api_key: Some("base-key".into()),
+                ..Default::default()
+            },
             ..Default::default()
         });
-        assert_eq!(provider.access_token, "");
+        assert_eq!(provider.api_key, "base-key");
     }
 
     #[test]
@@ -891,8 +882,7 @@ mod tests {
                 base_url: Some("wss://custom/".into()),
                 ..Default::default()
             },
-            app_id: Some("a".into()),
-            access_token: Some("t".into()),
+            api_key: Some("a".into()),
             ..Default::default()
         });
         assert_eq!(provider.base_url, "wss://custom/");
@@ -905,8 +895,7 @@ mod tests {
                 voice: Some("base_voice".into()),
                 ..Default::default()
             },
-            app_id: Some("a".into()),
-            access_token: Some("t".into()),
+            api_key: Some("a".into()),
             ..Default::default()
         });
         assert_eq!(provider.voice, "base_voice");
@@ -919,8 +908,7 @@ mod tests {
                 format: Some("ogg".into()),
                 ..Default::default()
             },
-            app_id: Some("a".into()),
-            access_token: Some("t".into()),
+            api_key: Some("a".into()),
             ..Default::default()
         });
         assert_eq!(provider.format, "ogg");
@@ -929,8 +917,7 @@ mod tests {
     #[test]
     fn test_c8_sample_rate_custom() {
         let provider = DoubaoTts::new(DoubaoTtsOption {
-            app_id: Some("a".into()),
-            access_token: Some("t".into()),
+            api_key: Some("a".into()),
             sample_rate: Some(44100),
             ..Default::default()
         });
@@ -940,8 +927,7 @@ mod tests {
     #[test]
     fn test_c9_enable_timestamp_true() {
         let provider = DoubaoTts::new(DoubaoTtsOption {
-            app_id: Some("a".into()),
-            access_token: Some("t".into()),
+            api_key: Some("a".into()),
             enable_timestamp: Some(true),
             ..Default::default()
         });
@@ -953,8 +939,7 @@ mod tests {
     #[test]
     fn test_h1_ws_request_headers() {
         let provider = DoubaoTts::new(DoubaoTtsOption {
-            app_id: Some("test-app".into()),
-            access_token: Some("test-token".into()),
+            api_key: Some("test-key".into()),
             resource_id: Some("test-resource".into()),
             ..Default::default()
         });
@@ -963,21 +948,15 @@ mod tests {
         assert_eq!(
             request
                 .headers()
-                .get("X-Api-App-Key")
+                .get("X-Api-Key")
                 .unwrap()
                 .to_str()
                 .unwrap(),
-            "test-app"
+            "test-key"
         );
-        assert_eq!(
-            request
-                .headers()
-                .get("X-Api-Access-Key")
-                .unwrap()
-                .to_str()
-                .unwrap(),
-            "test-token"
-        );
+        // 旧版双 Key 头已废弃，不应再出现
+        assert!(request.headers().get("X-Api-App-Key").is_none());
+        assert!(request.headers().get("X-Api-Access-Key").is_none());
         assert_eq!(
             request
                 .headers()
@@ -1017,8 +996,7 @@ mod tests {
     #[test]
     fn test_h2_ws_request_invalid_url() {
         let provider = DoubaoTts {
-            app_id: "app".into(),
-            access_token: "token".into(),
+            api_key: "key".into(),
             resource_id: "res".into(),
             base_url: "not a valid url".into(),
             voice: VoiceId::new(""),
@@ -1033,10 +1011,9 @@ mod tests {
     // ---- V1-V3: 参数验证 ----
 
     #[test]
-    fn test_v1_empty_app_id() {
+    fn test_v1_empty_api_key() {
         let provider = DoubaoTts::new(DoubaoTtsOption {
-            app_id: Some("".into()),
-            access_token: Some("token".into()),
+            api_key: Some("".into()),
             ..Default::default()
         });
         assert!(matches!(
@@ -1046,23 +1023,18 @@ mod tests {
     }
 
     #[test]
-    fn test_v2_empty_access_token() {
+    fn test_v2_valid_api_key() {
         let provider = DoubaoTts::new(DoubaoTtsOption {
-            app_id: Some("app".into()),
-            access_token: Some("".into()),
+            api_key: Some("valid-key".into()),
             ..Default::default()
         });
-        assert!(matches!(
-            provider.ensure_valid(),
-            Err(TtsError::InvalidParameter(_))
-        ));
+        assert!(provider.ensure_valid().is_ok());
     }
 
     #[test]
     fn test_v3_synthesize_empty_key() {
         let provider = DoubaoTts::new(DoubaoTtsOption {
-            app_id: Some("".into()),
-            access_token: Some("".into()),
+            api_key: Some("".into()),
             ..Default::default()
         });
         let request = TtsRequest {
@@ -1119,8 +1091,7 @@ mod tests {
     #[test]
     fn test_l1_list_voices_all_have_id() {
         let provider = DoubaoTts::new(DoubaoTtsOption {
-            app_id: Some("a".into()),
-            access_token: Some("t".into()),
+            api_key: Some("a".into()),
             ..Default::default()
         });
         let rt = tokio::runtime::Runtime::new().unwrap();

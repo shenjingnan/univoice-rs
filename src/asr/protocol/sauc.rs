@@ -332,15 +332,12 @@ pub fn parse_response(data: &[u8]) -> Result<SaucResponse, AsrError> {
 // ============================== 认证头 ==============================
 
 /// 构建 SAUC 认证 HTTP 请求头
-pub fn build_auth_headers(
-    app_key: &str,
-    access_key: &str,
-    resource_id: &str,
-) -> Vec<(String, String)> {
+///
+/// 新版控制台鉴权：仅需单个 `X-Api-Key`（旧版 `X-Api-App-Key` + `X-Api-Access-Key` 已废弃）。
+pub fn build_auth_headers(api_key: &str, resource_id: &str) -> Vec<(String, String)> {
     let connect_id = uuid::Uuid::new_v4().to_string();
     vec![
-        ("X-Api-App-Key".into(), app_key.to_string()),
-        ("X-Api-Access-Key".into(), access_key.to_string()),
+        ("X-Api-Key".into(), api_key.to_string()),
         ("X-Api-Resource-Id".into(), resource_id.to_string()),
         ("X-Api-Connect-Id".into(), connect_id),
     ]
@@ -867,18 +864,16 @@ mod tests {
 
     #[test]
     fn test_b1_auth_headers_all_fields() {
-        let headers = build_auth_headers("test-app", "test-access", "volc.bigasr.sauc.duration");
-        assert!(headers.iter().any(|(k, _)| k == "X-Api-App-Key"));
-        assert!(headers.iter().any(|(k, _)| k == "X-Api-Access-Key"));
+        let headers = build_auth_headers("test-key", "volc.bigasr.sauc.duration");
+        assert!(headers.iter().any(|(k, _)| k == "X-Api-Key"));
         assert!(headers.iter().any(|(k, _)| k == "X-Api-Resource-Id"));
         assert!(headers.iter().any(|(k, _)| k == "X-Api-Connect-Id"));
+        // 旧版双 Key 头已废弃，不应再出现
+        assert!(!headers.iter().any(|(k, _)| k == "X-Api-App-Key"));
+        assert!(!headers.iter().any(|(k, _)| k == "X-Api-Access-Key"));
         assert_eq!(
-            headers
-                .iter()
-                .find(|(k, _)| k == "X-Api-App-Key")
-                .unwrap()
-                .1,
-            "test-app"
+            headers.iter().find(|(k, _)| k == "X-Api-Key").unwrap().1,
+            "test-key"
         );
         assert_eq!(
             headers
@@ -892,7 +887,7 @@ mod tests {
 
     #[test]
     fn test_b2_auth_headers_default_resource_id() {
-        let headers = build_auth_headers("app", "access", "volc.bigasr.sauc.duration");
+        let headers = build_auth_headers("key", "volc.bigasr.sauc.duration");
         assert_eq!(
             headers
                 .iter()
@@ -905,7 +900,7 @@ mod tests {
 
     #[test]
     fn test_b3_auth_headers_connect_id_is_uuid() {
-        let headers = build_auth_headers("a", "b", "c");
+        let headers = build_auth_headers("key", "c");
         let connect_id = headers
             .iter()
             .find(|(k, _)| k == "X-Api-Connect-Id")

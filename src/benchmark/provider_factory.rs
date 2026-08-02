@@ -155,8 +155,7 @@ fn create_doubao_tts(
     format: &str,
     sample_rate: Option<u32>,
 ) -> Result<Box<dyn TtsProvider>, ProviderError> {
-    let app_id = env_opt("DOUBAO_APP_KEY").or_else(|| env_opt("DOUBAO_APP_ID"));
-    let access_token = env_opt("DOUBAO_ACCESS_TOKEN");
+    let api_key = env_opt("DOUBAO_API_KEY");
 
     Ok(Box::new(tts_provider::DoubaoTts::new(
         tts_provider::DoubaoTtsOption {
@@ -166,8 +165,7 @@ fn create_doubao_tts(
                 format: Some(format.to_string()),
                 ..Default::default()
             },
-            app_id,
-            access_token,
+            api_key,
             sample_rate,
             ..Default::default()
         },
@@ -367,8 +365,7 @@ fn create_doubao_asr(
     format: Option<AudioContainerFormat>,
     sample_rate: Option<u32>,
 ) -> Result<Box<dyn AsrProvider>, ProviderError> {
-    let app_key = env_opt("DOUBAO_APP_KEY").or_else(|| env_opt("DOUBAO_APP_ID"));
-    let access_key = env_opt("DOUBAO_ACCESS_TOKEN").or_else(|| env_opt("DOUBAO_ACCESS_KEY"));
+    let api_key = env_opt("DOUBAO_API_KEY");
 
     Ok(Box::new(asr_provider::DoubaoAsr::new(
         asr_provider::DoubaoAsrOption {
@@ -377,8 +374,7 @@ fn create_doubao_asr(
                 format,
                 ..Default::default()
             },
-            app_key,
-            access_key,
+            api_key,
             sample_rate: sample_rate.unwrap_or(16000),
             bits: 16,
             channel: 1,
