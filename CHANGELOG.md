@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.6](https://github.com/shenjingnan/univoice-rs/compare/v0.1.5...v0.1.6) - 2026-08-02
+
+### Added
+
+- *(asr,tts)* 豆包 ASR/TTS 切换新版控制台 X-Api-Key 鉴权 ([#37](https://github.com/shenjingnan/univoice-rs/pull/37))
+
 ## [0.1.5](https://github.com/shenjingnan/univoice-rs/compare/v0.1.4...v0.1.5) - 2026-07-27
 
 ### Added
