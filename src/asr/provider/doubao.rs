@@ -77,8 +77,8 @@ pub enum DoubaoAsrMode {
 #[derive(Debug, Clone)]
 pub struct DoubaoAsrOption {
     pub base: BaseProviderOption,
-    pub app_key: Option<String>,
-    pub access_key: Option<String>,
+    /// 新版控制台 API Key（X-Api-Key 鉴权）
+    pub api_key: Option<String>,
     pub resource_id: Option<String>,
     pub mode: DoubaoAsrMode,
     pub sample_rate: u32,
@@ -100,8 +100,7 @@ impl Default for DoubaoAsrOption {
     fn default() -> Self {
         Self {
             base: BaseProviderOption::default(),
-            app_key: None,
-            access_key: None,
+            api_key: None,
             resource_id: None,
             mode: DoubaoAsrMode::default(),
             sample_rate: DEFAULT_SAMPLE_RATE,
@@ -131,8 +130,7 @@ enum QueueItem {
 
 /// Doubao ASR Provider
 pub struct DoubaoAsr {
-    app_key: String,
-    access_key: String,
+    api_key: String,
     resource_id: String,
     mode: DoubaoAsrMode,
     base_url: String,
@@ -156,9 +154,8 @@ impl DoubaoAsr {
     pub fn new(options: DoubaoAsrOption) -> Self {
         let base = &options.base;
         Self {
-            app_key: options.app_key.unwrap_or_default(),
-            access_key: options
-                .access_key
+            api_key: options
+                .api_key
                 .or_else(|| base.api_key.clone())
                 .unwrap_or_default(),
             resource_id: options
@@ -326,19 +323,14 @@ impl AsrProvider for DoubaoAsr {
         audio: AudioStream,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<AsrStreamChunk, AsrError>> + Send>>, AsrError>
     {
-        if self.app_key.is_empty() {
+        if self.api_key.is_empty() {
             return Err(AsrError::InvalidParameter(
-                "appKey is required for Doubao ASR".into(),
-            ));
-        }
-        if self.access_key.is_empty() {
-            return Err(AsrError::InvalidParameter(
-                "accessKey is required for Doubao ASR".into(),
+                "apiKey is required for Doubao ASR".into(),
             ));
         }
 
         let url = self.get_websocket_url();
-        let headers = build_auth_headers(&self.app_key, &self.access_key, &self.resource_id);
+        let headers = build_auth_headers(&self.api_key, &self.resource_id);
         let request = url_to_ws_request(&url, &headers)?;
 
         // 带超时的 WebSocket 连接
@@ -408,15 +400,12 @@ impl AsrProvider for DoubaoAsr {
     }
 
     async fn connect(&self, options: AsrConnectOption) -> Result<Box<dyn AsrConnection>, AsrError> {
-        if self.app_key.is_empty() {
-            return Err(AsrError::InvalidParameter("appKey is required".into()));
-        }
-        if self.access_key.is_empty() {
-            return Err(AsrError::InvalidParameter("accessKey is required".into()));
+        if self.api_key.is_empty() {
+            return Err(AsrError::InvalidParameter("apiKey is required".into()));
         }
 
         let url = self.get_websocket_url();
-        let headers = build_auth_headers(&self.app_key, &self.access_key, &self.resource_id);
+        let headers = build_auth_headers(&self.api_key, &self.resource_id);
         let request = url_to_ws_request(&url, &headers)?;
 
         let (ws_stream, _) = tokio::time::timeout(options.timeout, connect_async(request))
@@ -589,8 +578,7 @@ mod tests {
     #[test]
     fn test_c1_constructor_defaults() {
         let provider = DoubaoAsr::new(DoubaoAsrOption {
-            app_key: Some("app-key".into()),
-            access_key: Some("access-key".into()),
+            api_key: Some("test-key".into()),
             ..Default::default()
         });
         assert_eq!(provider.name(), "doubao");
@@ -599,27 +587,26 @@ mod tests {
         assert_eq!(provider.resource_id, DEFAULT_RESOURCE_ID);
         assert_eq!(provider.bits, 16);
         assert_eq!(provider.channel, 1);
+        assert_eq!(provider.api_key, "test-key");
     }
 
     #[test]
-    fn test_c2_constructor_access_key_fallback() {
+    fn test_c2_constructor_api_key_fallback() {
         let provider = DoubaoAsr::new(DoubaoAsrOption {
             base: BaseProviderOption {
                 api_key: Some("api-key-fallback".into()),
                 ..Default::default()
             },
-            app_key: Some("app-key".into()),
-            access_key: None,
+            api_key: None,
             ..Default::default()
         });
-        assert_eq!(provider.access_key, "api-key-fallback");
+        assert_eq!(provider.api_key, "api-key-fallback");
     }
 
     #[test]
     fn test_c3_constructor_mode_default() {
         let provider = DoubaoAsr::new(DoubaoAsrOption {
-            app_key: Some("k".into()),
-            access_key: Some("k".into()),
+            api_key: Some("k".into()),
             ..Default::default()
         });
         // 默认 mode 应为 Streaming
@@ -629,8 +616,7 @@ mod tests {
     #[test]
     fn test_u1_url_streaming() {
         let provider = DoubaoAsr::new(DoubaoAsrOption {
-            app_key: Some("k".into()),
-            access_key: Some("k".into()),
+            api_key: Some("k".into()),
             mode: DoubaoAsrMode::Streaming,
             ..Default::default()
         });
@@ -643,8 +629,7 @@ mod tests {
     #[test]
     fn test_u2_url_async() {
         let provider = DoubaoAsr::new(DoubaoAsrOption {
-            app_key: Some("k".into()),
-            access_key: Some("k".into()),
+            api_key: Some("k".into()),
             mode: DoubaoAsrMode::Async,
             ..Default::default()
         });
@@ -657,8 +642,7 @@ mod tests {
     #[test]
     fn test_u3_url_nostream() {
         let provider = DoubaoAsr::new(DoubaoAsrOption {
-            app_key: Some("k".into()),
-            access_key: Some("k".into()),
+            api_key: Some("k".into()),
             mode: DoubaoAsrMode::NoStream,
             ..Default::default()
         });
@@ -675,8 +659,7 @@ mod tests {
                 base_url: Some("ws://localhost:8080".into()),
                 ..Default::default()
             },
-            app_key: Some("k".into()),
-            access_key: Some("k".into()),
+            api_key: Some("k".into()),
             mode: DoubaoAsrMode::Streaming,
             ..Default::default()
         });
@@ -686,8 +669,7 @@ mod tests {
     #[test]
     fn test_r1_build_params_default() {
         let provider = DoubaoAsr::new(DoubaoAsrOption {
-            app_key: Some("k".into()),
-            access_key: Some("k".into()),
+            api_key: Some("k".into()),
             ..Default::default()
         });
         let params = provider.build_full_client_request_params();
@@ -705,8 +687,7 @@ mod tests {
                 codec: Some(AudioCodecFormat::Opus),
                 ..Default::default()
             },
-            app_key: Some("k".into()),
-            access_key: Some("k".into()),
+            api_key: Some("k".into()),
             ..Default::default()
         });
         let params = provider.build_full_client_request_params();
@@ -720,8 +701,7 @@ mod tests {
             base: BaseProviderOption {
                 ..Default::default()
             },
-            app_key: Some("k".into()),
-            access_key: Some("k".into()),
+            api_key: Some("k".into()),
             end_window_size: Some(500),
             vad_segment_duration: Some(3000),
             ..Default::default()
@@ -734,8 +714,7 @@ mod tests {
     #[test]
     fn test_r4_build_params_without_vad() {
         let provider = DoubaoAsr::new(DoubaoAsrOption {
-            app_key: Some("k".into()),
-            access_key: Some("k".into()),
+            api_key: Some("k".into()),
             ..Default::default()
         });
         let params = provider.build_full_client_request_params();
@@ -744,10 +723,9 @@ mod tests {
     }
 
     #[test]
-    fn test_v1_validate_empty_app_key() {
+    fn test_v1_validate_empty_api_key_listen_stream() {
         let provider = DoubaoAsr::new(DoubaoAsrOption {
-            app_key: Some("".into()),
-            access_key: Some("key".into()),
+            api_key: Some("".into()),
             ..Default::default()
         });
         let audio: AudioStream = Box::pin(futures_util::stream::empty());
@@ -760,15 +738,13 @@ mod tests {
     }
 
     #[test]
-    fn test_v2_validate_empty_access_key() {
+    fn test_v2_validate_empty_api_key_connect() {
         let provider = DoubaoAsr::new(DoubaoAsrOption {
-            app_key: Some("key".into()),
-            access_key: Some("".into()),
+            api_key: Some("".into()),
             ..Default::default()
         });
-        let audio: AudioStream = Box::pin(futures_util::stream::empty());
         let rt = tokio::runtime::Runtime::new().unwrap();
-        let result = rt.block_on(provider.listen_stream(audio));
+        let result = rt.block_on(provider.connect(AsrConnectOption::default()));
         match result {
             Err(AsrError::InvalidParameter(_)) => {} // expected
             _ => panic!("Expected InvalidParameter error"),

@@ -26,13 +26,9 @@ use univoice::tts::{BaseTtsOption, TtsProvider, TtsRequest};
 #[derive(Parser)]
 #[command(name = "tts-doubao-synthesize", about = "Doubao TTS 非流式合成示例")]
 struct Args {
-    /// 火山引擎 App Key（也支持 DOUBAO_APP_KEY 环境变量）
-    #[arg(long, env = "DOUBAO_APP_KEY")]
-    app_key: String,
-
-    /// 火山引擎 Access Token（也支持 DOUBAO_ACCESS_TOKEN 环境变量）
-    #[arg(long, env = "DOUBAO_ACCESS_TOKEN")]
-    access_token: String,
+    /// 火山引擎新版控制台 API Key（也支持 DOUBAO_API_KEY 环境变量）
+    #[arg(long, env = "DOUBAO_API_KEY")]
+    api_key: String,
 
     /// 待合成的文本
     #[arg(
@@ -68,12 +64,8 @@ async fn main() {
     dotenvy::dotenv().ok();
     let args = Args::parse();
 
-    if args.app_key.is_empty() {
-        eprintln!("错误: 请提供 --app-key 或设置 DOUBAO_APP_KEY 环境变量");
-        std::process::exit(1);
-    }
-    if args.access_token.is_empty() {
-        eprintln!("错误: 请提供 --access-token 或设置 DOUBAO_ACCESS_TOKEN 环境变量");
+    if args.api_key.is_empty() {
+        eprintln!("错误: 请提供 --api-key 或设置 DOUBAO_API_KEY 环境变量");
         std::process::exit(1);
     }
 
@@ -88,8 +80,7 @@ async fn main() {
             format: args.format,
             ..Default::default()
         },
-        app_id: Some(args.app_key),
-        access_token: Some(args.access_token),
+        api_key: Some(args.api_key),
         resource_id: args.cluster,
         sample_rate: args.sample_rate,
         enable_timestamp: None,

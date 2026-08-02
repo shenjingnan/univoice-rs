@@ -9,13 +9,11 @@
 /// 使用方法:
 /// ```bash
 /// cargo run --features opus-decoder --example asr_doubao_vad -- \
-///   --app-key YOUR_APP_KEY \
-///   --access-key YOUR_ACCESS_KEY
+///   --api-key YOUR_API_KEY
 /// ```
 ///
 /// 环境变量:
-/// - DOUBAO_APP_KEY: 火山引擎 App Key
-/// - DOUBAO_ACCESS_TOKEN: 火山引擎 Access Key
+/// - DOUBAO_API_KEY: 火山引擎新版控制台 API Key
 use std::path::PathBuf;
 use std::time::Instant;
 
@@ -34,11 +32,9 @@ use univoice::asr::{
 #[derive(Parser)]
 #[command(name = "asr-doubao-vad", about = "Doubao ASR 流式端点检测（VAD）")]
 struct Args {
-    #[arg(long, env = "DOUBAO_APP_KEY")]
-    app_key: String,
-
-    #[arg(long, env = "DOUBAO_ACCESS_TOKEN")]
-    access_key: String,
+    /// 火山引擎新版控制台 API Key（也支持 DOUBAO_API_KEY 环境变量）
+    #[arg(long, env = "DOUBAO_API_KEY")]
+    api_key: String,
 
     /// Opus 数据包目录（默认 examples/assets/16khz_16bit_1channel）
     #[arg(long)]
@@ -113,9 +109,8 @@ async fn main() {
     dotenvy::dotenv().ok();
     let args = Args::parse();
 
-    if args.app_key.is_empty() || args.access_key.is_empty() {
-        eprintln!("错误: 请提供 --app-key 和 --access-key");
-        eprintln!("也可以设置 DOUBAO_APP_KEY 和 DOUBAO_ACCESS_TOKEN 环境变量");
+    if args.api_key.is_empty() {
+        eprintln!("错误: 请提供 --api-key 或设置 DOUBAO_API_KEY 环境变量");
         std::process::exit(1);
     }
 
@@ -157,8 +152,7 @@ async fn main() {
             language: Some("zh-CN".into()),
             ..Default::default()
         },
-        app_key: Some(args.app_key),
-        access_key: Some(args.access_key),
+        api_key: Some(args.api_key),
         // 使用 bigmodel_async（双向流式优化版）才能支持 VAD 提前判停
         mode: DoubaoAsrMode::Async,
         sample_rate: 16000,

@@ -48,8 +48,7 @@ mod tests {
         );
 
         let options = DoubaoAsrOption {
-            app_key: Some("test".into()),
-            access_key: Some("test".into()),
+            api_key: Some("test".into()),
             ..Default::default()
         };
         let provider = create_asr("doubao", options).unwrap();
