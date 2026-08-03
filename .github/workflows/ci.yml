@@ -36,7 +36,7 @@ jobs:
         run: cargo clippy -- -D warnings
 
       - name: Install typos-cli
-        uses: taiki-e/install-action@v2
+        uses: taiki-e/install-action@v2.85.5
         with:
           tool: typos-cli
 
@@ -50,7 +50,7 @@ jobs:
         run: cargo build
 
       - name: Install cargo-tarpaulin
-        uses: taiki-e/install-action@v2
+        uses: taiki-e/install-action@v2.85.5
         with:
           tool: cargo-tarpaulin
 
